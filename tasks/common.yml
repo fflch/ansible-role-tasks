@@ -1,0 +1,58 @@
+- name: Update, upgrade and autoremove apt packages
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 # One day
+    autoremove: yes
+
+- name: Install a list of packages
+  apt:
+    pkg:
+    - rsync
+    - vim
+    - msmtp
+    - curl
+    - git
+
+- name: Corrige o timezone para America/Sao_Paulo
+  include_role:
+    name: adriagalin.timezone
+  vars:
+    ag_timezone: 'America/Sao_Paulo'
+
+- name: Altera o locale para pt_BR.UTF-8
+  include_role:
+    name: infOpen.locales
+  vars:
+    locales_to_configure:
+      - name: 'pt_BR.UTF-8'
+        modifier: 'UTF-8'
+    locales_defaults:
+      LANG: 'pt_BR.UTF-8'
+      LC_CTYPE: 'pt_BR.UTF-8'
+      LANGUAGE: 'pt_BR.UTF-8'
+
+- name: Configura ntp
+  include_role:
+    name: geerlingguy.ntp
+  vars:
+    ntp_manage_config: true
+    ntp_timezone: 'America/Sao_Paulo'
+    ntp_servers:
+      - 'a.st1.ntp.br'
+      - 'b.st1.ntp.br'
+    ntp_restrict:
+      - "127.0.0.1"
+      - "::1"
+      - "10.0.0.0 mask 255.0.0.0 nomodify notrap"
+      - "172.19.0.0 mask 255.255.0.0 nomodify notrap"
+      - "143.107.0.0 mask 255.255.0.0 nomodify notrap"
+
+- name: Creates directory /root/.ssh
+  file:
+    path: /root/.ssh
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+    recurse: yes

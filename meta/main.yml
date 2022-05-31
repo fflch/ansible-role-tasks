@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: thiagogomesverissimo
+  description: tasks
+  company: fflch
+  role_name: fflch.tasks
+  license:
+    - MIT
+  min_ansible_version: 2.0
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+  galaxy_tags:
+    - tasks
