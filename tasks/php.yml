@@ -48,13 +48,6 @@
     apache_mods_enabled:
       - rewrite.load
       - ssl.load
-  
-- name: index.html para virtualhost 000-default
-  template:
-    src: "../../templates/index.html"
-    dest: "/var/www/html/index.html"
-    owner: www-data
-    group: www-data
 
 - name: index.html para virtualhost 000-default
   copy:
