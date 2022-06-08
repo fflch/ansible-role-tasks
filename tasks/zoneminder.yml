@@ -1,0 +1,189 @@
+- name: Role que corrige hostname da máquina
+  include_role:
+    name: Stouts.hostname
+  vars:
+    hostname_hostname: "{{ zoneminder_frontend_url }}"
+
+- name: Install extra packages
+  apt:
+    state: latest
+    update_cache: yes
+    pkg:
+      - apt-transport-https
+      - gnupg
+      - default-mysql-client
+      - default-libmysqlclient-dev
+      - python3-apt
+
+# Install the ZoneMinder
+- name: Add an Apt signing key, uses whichever key is at the URL
+  apt_key:
+    url: https://zmrepo.zoneminder.com/debian/archive-keyring.gpg
+    state: present
+
+- name: Add repository zoneminder
+  apt_repository:
+    repo: "deb https://zmrepo.zoneminder.com/debian/release-{{ zoneminder_version }} buster/"
+    state: present
+    filename: zoneminder
+  register: zoneminder_repo
+
+- name: Update apt cache if repo was added.
+  apt: update_cache=yes
+  when: zoneminder_repo.changed
+
+- name: Install zoneminder
+  apt:
+    state: latest
+    pkg:
+      - zoneminder
+
+- name: Corrige o problema da instalação do MYSQL-python no mariadb10.2
+  lineinfile:
+    path: "/usr/include/mariadb/mysql.h"
+    insertafter: '\s{4}unsigned int warning_count;'
+    line: "    unsigned int reconnect;"
+
+- name: Ativa variável global do mysql, usado na versão 1.36
+  mysql_variables:
+    login_user: "{{ mysql_root.username }}"
+    login_host: "{{ zoneminder_mysql.host }}"
+    login_password: "{{ mysql_root.password }}"
+    variable: 'log_bin_trust_function_creators'
+    value: '1'
+
+- name: Change zm.conf database host
+  lineinfile:
+    path: "/etc/zm/zm.conf"
+    regexp: '^ZM_DB_HOST'
+    line: "ZM_DB_HOST={{ zoneminder_mysql.host }}"
+
+- name: Change zm.conf database name
+  lineinfile:
+    path: "/etc/zm/zm.conf"
+    regexp: '^ZM_DB_NAME'
+    line: "ZM_DB_NAME={{ zoneminder_mysql.database }}"
+
+- name: Change zm.conf database user
+  lineinfile:
+    path: "/etc/zm/zm.conf"
+    regexp: '^ZM_DB_USER'
+    line: "ZM_DB_USER={{ zoneminder_mysql.user }}"
+
+- name: Change zm.conf database user password
+  lineinfile:
+    path: "/etc/zm/zm.conf"
+    regexp: '^ZM_DB_PASS'
+    line: "ZM_DB_PASS={{ zoneminder_mysql.password }}"
+
+- name: Check if table Zones exists
+  shell: >
+    mysql
+    --host={{ zoneminder_mysql.host }}
+    --database={{ zoneminder_mysql.database }}
+    --user={{ zoneminder_mysql.user }}
+    --password={{ zoneminder_mysql.password }}
+    -e 'SHOW TABLES;' | grep -c Zones
+  register: dbstatus
+  failed_when: dbstatus.rc == 2
+
+- name: Change database name in zm_create.sql
+  replace:
+    path: "/usr/share/zoneminder/db/zm_create.sql"
+    regexp: '`zm`'
+    replace: "`{{ zoneminder_mysql.database }}`"
+  register: change_dbname
+
+- name: Sobe schema do zoneminder no mysql
+  mysql_db:
+    name: "{{ zoneminder_mysql.database }}"
+    login_host: "{{ zoneminder_mysql.host }}"
+    login_user: "{{ zoneminder_mysql.user }}"
+    login_password: "{{ zoneminder_mysql.password }}"
+    state: import
+    target: "/usr/share/zoneminder/db/zm_create.sql"
+  when: dbstatus.stdout == "0" and change_dbname is succeeded
+
+- name: Copia o web site template configuration
+  copy:
+    src: /usr/share/doc/zoneminder/examples/apache.conf
+    dest: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Muda o alias "/zm/cache" do arquivo {{ apache2_confs }}
+  lineinfile:
+    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    regexp: '\s{4}Alias /zm/cache.'
+    line: '    Alias /cache "/var/cache/zoneminder/cache"'
+  notify:
+    - restart apache2
+
+- name: Remove a linha do alias "/zm" do arquivo {{ apache2_confs }}
+  lineinfile:
+    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    regexp: '\s{4}Alias /zm\s.'
+    state: absent
+  notify:
+    - restart apache2
+
+- name: Muda o alias "/cgi-bin" do arquivo {{ apache2_confs }}
+  lineinfile:
+    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    regexp: '\s{4}ScriptAlias /cgi-bin.'
+    line: '    ScriptAlias /zm/cgi-bin "/usr/lib/zoneminder/cgi-bin"'
+  notify:
+    - restart apache2
+
+- name: Muda o path "/zm/api" do arquivo {{ apache2_confs }}
+  replace:
+    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    regexp: '(\s+RewriteBase\s)/zm/api'
+    replace: '\1/api'
+  notify:
+    - restart apache2
+
+- name: Habilitando {{ apache2_confs }}.conf
+  command: >
+    a2ensite {{ apache2_confs }}.conf
+  args:
+    creates: /etc/apache2/sites-enabled/{{ apache2_confs }}.conf
+  notify:
+    - restart apache2
+
+- name: Para serviço para atualiza banco de dados
+  systemd:
+    state: stopped
+    enabled: yes
+    name: zoneminder.service
+
+- name: Atualiza banco de dados
+  shell: >
+    /usr/bin/zmupdate.pl -nointeractive
+
+- name: Ajusta o usuário que executa o zoneminder (para o Debian)
+  replace:
+    path: /lib/systemd/system/zoneminder.service
+    regexp: '#User=www-data'
+    replace: 'User=www-data'
+  register: alter_zoneminder_service
+
+- name: just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when: alter_zoneminder_service is succeeded
+
+- name: Inicia o serviço
+  systemd:
+    state: started
+    enabled: yes
+    name: zoneminder.service
+
+- name: copy zoneminder-event-cleanup.sh.j2 - para caso precisemos rodar na mão
+  template:
+    src: ../../templates/zoneminder-event-cleanup.sh.j2
+    dest: /usr/local/sbin/zoneminder-event-cleanup
+    owner: root
+    mode: 0700
