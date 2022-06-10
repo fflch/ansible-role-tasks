@@ -1,5 +1,5 @@
-#- include: common.yml
-#  when: tasks_common
+- include: common.yml
+  when: tasks_common
 
 - include: msmtp.yml
   when: tasks_msmtp

@@ -20,3 +20,7 @@
       set sendmail="/usr/bin/msmtp"
     owner: root
     group: root
+
+
+# teste para verificar se email está sendo enviado:
+# printf "Subject: Test\n\nhello there username." | msmtp -a default SEU-EMAIL@usp.br
