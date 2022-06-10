@@ -1,6 +1,4 @@
 ---
-
-tasks_common: true
 tasks_msmtp: true
 
 tasks_php: false
