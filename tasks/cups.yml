@@ -1,0 +1,86 @@
+- name: Install packages for cups and tea4cups
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: True
+  vars:
+    packages:
+    - cups-tea4cups
+    - pkpgcounter
+
+- name: copy quota check
+  template:
+    src: 'quota_check.j2'
+    dest: /root/quota_check
+    mode: 0755
+
+- name: copy quota save 
+  template:
+    src: 'quota_save.j2'
+    dest: '/root/quota_save'
+    mode: 0755
+
+- name: quota check line  on /etc/cups/tea4cups.conf
+  lineinfile:
+    path: '/etc/cups/tea4cups.conf'
+    state: present
+    create: yes
+    line: 'prehook_quotacheck : /root/quota_check'
+
+- name: quota save line on /etc/cups/tea4cups.conf
+  lineinfile:
+    path: '/etc/cups/tea4cups.conf'
+    state: present
+    create: yes
+    line: 'posthook_quotasave : /root/quota_save'
+
+- include: partials/printers.yml
+
+- name: 'Lê arquivo csv com as redes permitidas'
+  set_fact:
+    tasks_cups_csv_file_content: "{{ lookup('file', tasks_cups_networks_csv) }}"
+
+- name: 'Constrói o array template_cups_allowed_networks a partir de um csv'
+  set_fact:
+    tasks_cups_template_cups_allowed_networks: "{{ tasks_cups_csv_file_content.split('\n') }}"
+
+- name:
+  include_role:
+    name: HP41.cups
+  vars:
+    cups_cupsd_conf_template: "cupsd.conf.j2"
+    cups_expect_pkgs: 
+      - expect
+    cups_ricoh_openprinting_ppds: False
+    cups_purge_all_printers_and_classes: False
+    cups_packages_to_install:
+      - cups
+      - cups-pdf
+      - foomatic-db-engine
+      - printer-driver-all
+      - hp-ppd
+      - openprinting-ppds
+
+- name: org.cups.cupsd.socket.d
+  file:
+    path: /etc/systemd/system/org.cups.cupsd.socket.d/
+    recurse: yes
+    state: directory
+
+- name: copy socket
+  template:
+    src: cups/override.conf
+    dest: /etc/systemd/system/org.cups.cupsd.socket.d/override.conf
+
+- name: change root's password
+  user:
+    name: root
+    password: tasks_cups_root_password
+
+- name: Restart service
+  service:
+    name: cups
+    state: restarted
+
+
+

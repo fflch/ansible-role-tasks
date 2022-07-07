@@ -1,5 +1,11 @@
 - include: common.yml
 
+- include: sambadc.yml
+  when: tasks_sambadc
+
+- include: cups.yml
+  when: tasks_cups
+
 - include: msmtp.yml
   when: tasks_msmtp
 
@@ -8,3 +14,4 @@
 
 - include: zoneminder.yml
   when: tasks_zoneminder
+
