@@ -34,8 +34,7 @@
     create: yes
     line: 'posthook_quotasave : /root/quota_save'
 
-- include: partials/printers.yml
-
+###### Redes permitidas - Início
 - name: 'Lê arquivo csv com as redes permitidas'
   set_fact:
     tasks_cups_csv_file_content: "{{ lookup('file', tasks_cups_networks_csv) }}"
@@ -43,6 +42,9 @@
 - name: 'Constrói o array template_cups_allowed_networks a partir de um csv'
   set_fact:
     tasks_cups_template_cups_allowed_networks: "{{ tasks_cups_csv_file_content.split('\n') }}"
+###### Redes permitidas - Fim
+
+- include: partials/printers.yml
 
 - name:
   include_role:

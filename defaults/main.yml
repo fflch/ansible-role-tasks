@@ -20,6 +20,6 @@ tasks_cups_template_cups_admin_networks:
   - '10.180.0.0/19'
   - '192.168.8.0/24'
 
-tasks_cups_root_password: '123' 
+tasks_cups_root_password: '12345678'
 
 
