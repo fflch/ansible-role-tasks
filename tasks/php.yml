@@ -33,11 +33,11 @@
     php_max_execution_time: "300"
     php_max_input_time: "240"
     php_sendmail_path: "/usr/bin/msmtp -t"
-    php_upload_max_filesize: "256M"
+    php_upload_max_filesize: "128M"
     php_max_file_uploads: "60"
     php_date_timezone: "America/Sao_Paulo"
     php_max_input_vars: "2000"
-    php_post_max_size: "80M"
+    php_post_max_size: "128M"
 
 - name: Instalação do apache
   include_role:
