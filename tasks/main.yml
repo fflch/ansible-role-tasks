@@ -1,7 +1,5 @@
 - include: common.yml
-
-- include: sambadc.yml
-  when: tasks_sambadc
+  when: tasks_common
 
 - include: cups.yml
   when: tasks_cups
