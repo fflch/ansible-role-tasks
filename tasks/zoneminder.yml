@@ -1,9 +1,3 @@
-- name: Role que corrige hostname da máquina
-  include_role:
-    name: Stouts.hostname
-  vars:
-    hostname_hostname: "{{ zoneminder_frontend_url }}"
-
 - name: Install extra packages
   apt:
     state: latest
@@ -107,49 +101,49 @@
 - name: Copia o web site template configuration
   copy:
     src: /usr/share/doc/zoneminder/examples/apache.conf
-    dest: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    dest: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
     remote_src: yes
     owner: root
     group: root
     mode: '0644'
 
-- name: Muda o alias "/zm/cache" do arquivo {{ apache2_confs }}
+- name: Muda o alias "/zm/cache" do arquivo {{ zoneminder_apache2_confs }}
   lineinfile:
-    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
     regexp: '\s{4}Alias /zm/cache.'
     line: '    Alias /cache "/var/cache/zoneminder/cache"'
   notify:
     - restart apache2
 
-- name: Remove a linha do alias "/zm" do arquivo {{ apache2_confs }}
+- name: Remove a linha do alias "/zm" do arquivo {{ zoneminder_apache2_confs }}
   lineinfile:
-    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
     regexp: '\s{4}Alias /zm\s.'
     state: absent
   notify:
     - restart apache2
 
-- name: Muda o alias "/cgi-bin" do arquivo {{ apache2_confs }}
+- name: Muda o alias "/cgi-bin" do arquivo {{ zoneminder_apache2_confs }}
   lineinfile:
-    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
     regexp: '\s{4}ScriptAlias /cgi-bin.'
     line: '    ScriptAlias /zm/cgi-bin "/usr/lib/zoneminder/cgi-bin"'
   notify:
     - restart apache2
 
-- name: Muda o path "/zm/api" do arquivo {{ apache2_confs }}
+- name: Muda o path "/zm/api" do arquivo {{ zoneminder_apache2_confs }}
   replace:
-    path: "/etc/apache2/sites-available/{{ apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
     regexp: '(\s+RewriteBase\s)/zm/api'
     replace: '\1/api'
   notify:
     - restart apache2
 
-- name: Habilitando {{ apache2_confs }}.conf
+- name: Habilitando {{ zoneminder_apache2_confs }}.conf
   command: >
-    a2ensite {{ apache2_confs }}.conf
+    a2ensite {{ zoneminder_apache2_confs }}.conf
   args:
-    creates: /etc/apache2/sites-enabled/{{ apache2_confs }}.conf
+    creates: /etc/apache2/sites-enabled/{{ zoneminder_apache2_confs }}.conf
   notify:
     - restart apache2
 
