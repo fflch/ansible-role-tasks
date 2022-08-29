@@ -6,7 +6,7 @@
 
 - name: csv to list
   set_fact:
-   printers: "{{ printersfile.split('\n') }}"
+    printers: "{{ printersfile.split('\n') }}"
 
 - name: Initialize an empty list for our printers
   set_fact:
