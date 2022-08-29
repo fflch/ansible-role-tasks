@@ -15,3 +15,6 @@
 - include: zoneminder.yml
   when: tasks_zoneminder
 
+- include: django.yml
+  when: tasks_django
+

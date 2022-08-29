@@ -1,0 +1,28 @@
+- name: Install a list of packages for django
+  apt:
+    pkg:
+    - git
+    - apt-transport-https
+    - curl
+    - python3-venv
+
+- name: Add the user 'tasks_django_user'
+  user:
+    name: "{{tasks_django_user}}"
+
+- name: Clone django project repository
+  git:
+    repo: "https://github.com/fflch/analytics.git"
+    dest: "{{ tasks_django_dir }}"
+    version: master
+  become_user: "{{tasks_django_user}}"
+
+- name: Create virtualenv and run pip install -r requirement.txt
+  pip:
+    virtualenv: "{{ tasks_django_dir }}/venv"
+    requirements: "{{ tasks_django_dir }}/requirements.txt"
+    virtualenv_command: "/usr/bin/python3 -m venv"
+  become_user: "{{tasks_django_user}}"
+
+# https://github.com/ciur/deploy-django-from-zero-to-hero/blob/master/ansible/deploy/django-demo-app/app/tasks/main.yml
+# https://www.youtube.com/watch?v=fx80N0eQOos

@@ -1,0 +1,19 @@
+- name: install packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: True
+  vars:
+     packages:
+     - printer-driver-cups-pdf
+
+- name: Install pdfprinter
+  shell: >
+    /usr/sbin/lpadmin -p pdfprinter  
+    -v cups-pdf:/
+    -P /usr/share/ppd/cups-pdf/CUPS-PDF.ppd
+    -o printer-error-policy=abort-job
+    -o printer-is-shared=true
+    -o PageSize=A4
+    -o Media=A4
+    - -E

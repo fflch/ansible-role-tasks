@@ -5,7 +5,9 @@ tasks_php: false
 tasks_zoneminder: false
 tasks_cups: false
 tasks_sambadc: false
+tasks_django: false
 
+###################################
 # variáveis cups
 tasks_cups_quotas_endpoint: 'http://127.0.0.1/x'
 tasks_cups_quotas_api_token: '123'
@@ -21,5 +23,9 @@ tasks_cups_template_cups_admin_networks:
   - '192.168.8.0/24'
 
 tasks_cups_root_password: '123' 
+
+###################################
+tasks_django_user: 'djangoprod'
+tasks_django_dir: "/home/{{tasks_django_user}}/analytics"
 
 
