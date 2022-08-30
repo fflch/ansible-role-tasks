@@ -5,24 +5,79 @@
     - apt-transport-https
     - curl
     - python3-venv
+    - python3-pillow
+    - python3-lxml
+    - libpam-systemd
+    - systemd-container #machinectl
 
-- name: Add the user 'tasks_django_user'
+- name: Aplica role gforcada.compile-python
+  include_role:
+    name: gforcada.compile-python
+  vars:
+    python_39: true
+    python_27: false
+    python_36: false
+
+- name: Add the group 'tasks_django_user'
+  group:
+    name: "{{ tasks_django_user }}"
+    state: present
+
+- name: create user
   user:
-    name: "{{tasks_django_user}}"
+    name: "{{ tasks_django_user }}"
+    shell: /bin/bash
+    skeleton: "/etc/skel"
+    home: "/home/{{ tasks_django_user }}"
+    group: "{{ tasks_django_user }}"
+    groups: "{{ tasks_django_user }}"
+    password: "{{ tasks_django_user_password | password_hash('sha512') }}"
+    state: present
+    append: yes
 
 - name: Clone django project repository
   git:
     repo: "https://github.com/fflch/analytics.git"
     dest: "{{ tasks_django_dir }}"
     version: master
+    force: yes
+    update: yes
   become_user: "{{tasks_django_user}}"
 
 - name: Create virtualenv and run pip install -r requirement.txt
   pip:
     virtualenv: "{{ tasks_django_dir }}/venv"
     requirements: "{{ tasks_django_dir }}/requirements.txt"
-    virtualenv_command: "/usr/bin/python3 -m venv"
-  become_user: "{{tasks_django_user}}"
+    virtualenv_command: "/srv/python3.9/bin/python3.9 -m venv"
+  become_user: "{{ tasks_django_user }}"
 
-# https://github.com/ciur/deploy-django-from-zero-to-hero/blob/master/ansible/deploy/django-demo-app/app/tasks/main.yml
-# https://www.youtube.com/watch?v=fx80N0eQOos
+- name: Creates directory .config/systemd/user
+  file:
+    path:  "{{ tasks_django_home }}/.config/systemd/user/"
+    state: directory
+    owner: "{{ tasks_django_user }}"
+    group: "{{ tasks_django_user }}"
+    recurse: yes
+
+- name: copy .config/systemd/user/
+  become_user: "{{ tasks_django_user }}"
+  template:
+    src: "django.service.j2"
+    dest: "/{{ tasks_django_home}}/.config/systemd/user/{{ tasks_django_user}}.service"
+    owner: "{{ tasks_django_user }}"
+    group: "{{ tasks_django_user }}"
+    mode: 0600
+
+#systemctl enable djangoprod.service  --user
+#systemctl start  djangoprod.service  --user
+
+#- name: enable django service
+#  become: true
+#  become_method: machinectl
+#  become_user: "{{ tasks_django_user }}"
+#  systemd:
+#    name: "{{ tasks_django_user }}.service"
+#    enabled: yes
+#    state: started
+#    scope: user
+#    daemon_reload: yes

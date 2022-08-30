@@ -1,5 +1,4 @@
 ---
-tasks_common: true
 tasks_msmtp: false
 tasks_php: false
 tasks_zoneminder: false
@@ -22,4 +21,7 @@ tasks_cups_admin_networks:
 
 ###################################
 tasks_django_user: 'djangoprod'
+tasks_django_home: "/home/{{tasks_django_user}}"
+tasks_django_port: '8001'
 tasks_django_dir: "/home/{{tasks_django_user}}/analytics"
+tasks_django_user_password: SuperSenha123

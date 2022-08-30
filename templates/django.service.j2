@@ -1,0 +1,13 @@
+[Unit]
+Description=python app
+After=network.target
+
+[Service]
+WorkingDirectory={{ tasks_django_dir }}
+ExecStart={{ tasks_django_dir }}/venv/bin/python3.9 {{ tasks_django_dir }}/venv/bin/gunicorn --bind 0.0.0.0:{{ tasks_django_port }} -w 4 core.wsgi
+ExecStop=/bin/kill -INT $MAINPID
+ExecReload=/bin/kill -TERM $MAINPID
+Restart=always
+
+[Install]
+WantedBy=default.target

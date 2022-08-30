@@ -1,5 +1,4 @@
 - include: common.yml
-  when: tasks_common
 
 - include: cups.yml
   when: tasks_cups
