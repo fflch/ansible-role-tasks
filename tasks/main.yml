@@ -1,5 +1,4 @@
 - include: common.yml
-  when: tasks_common
 
 - include: cups.yml
   when: tasks_cups
@@ -15,3 +14,6 @@
 
 - include: bind.yml
   when: tasks_bind
+
+- include: django.yml
+  when: tasks_django
