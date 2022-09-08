@@ -1,0 +1,44 @@
+---
+#### Impressoras da próaluno
+
+- name: Copy ppds K7600
+  copy:
+    src: "../../files/ppds/{{item}}"
+    dest: "/usr/share/cups/model/{{item}}"
+    mode: '0755'
+  loop:
+    - K7600.ppd
+
+- name: Install printer ipp próaluno letras
+  shell: >
+    /usr/sbin/lpadmin -p {{ item.name }}
+    -v {{ item.device }}
+    -m {{ item.model }}
+    -o printer-error-policy=abort-job
+    -o printer-is-shared=true
+    -o PageSize=A4
+    -o Media=A4
+    - -E
+  args:
+    chdir: /usr/share/cups/model
+  loop: "{{ proaluno_printers }}"
+  vars:
+    proaluno_printers:
+      - name: "financeiro_ppd"
+        device: "tea4cups:ipp://10.80.0.7/ipp/printer"
+        model: "K7600.ppd"
+
+        #### Letras ####
+      - name: "proaluno_letras_ppd"
+        device: "tea4cups:ipp://10.80.0.31/ipp/printer"
+        model: "K7600.ppd"
+
+        #### FCS ####
+      - name: "proaluno_fcs_ppd"
+        device: "tea4cups:ipp://10.80.0.41/ipp/printer"
+        model: "K7600.ppd"
+
+        #### GH ####
+      - name: "proaluno_gh_ppd"
+        device: "tea4cups:ipp://10.80.0.32/ipp/printer"
+        model: "K7600.ppd"

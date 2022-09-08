@@ -45,6 +45,7 @@
 ###### Redes permitidas - Fim
 
 - include: partials/printers.yml
+- include: partials/proaluno_printers.yml
 
 - name:
   include_role:
