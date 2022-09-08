@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# current directory
+cd $(dirname $0)
+
+db='/var/cache/bind/master/{{ tasks_bind_subdomain }}.db'
+log='.cache/log.txt'
+clients="files/url_clients.txt"
+head="files/head.txt"
+
+# Ambientes dev ou prod
+target=$1
+if [ $# -ne 1 ]
+then
+  echo "Please, run in this way: ./main prod or ./main.sh dev"
+  exit 1
+fi 
+
+createCacheFolder()
+{
+    if [ ! -d ".cache" ];
+    then
+        mkdir .cache
+    fi
+
+    # .cache client file
+    if [ ! -f '.cache/clients_old.txt' ]
+    then
+        touch .cache/clients_old.txt
+    fi
+}
+
+montaSerial()
+{
+    serial_db=$(cat $db | grep Serial | cut -d';' -f1 | xargs)
+    date_db=${serial_db: 0:8}
+    id_db=${serial_db: -2}
+    today=$(date +%Y%m%d)
+
+    id_db=$((10#$id_db))
+    if [ $((id_db)) -lt 99 ]
+    then
+        new_id=$(($id_db+1))
+        new_id=$(printf "%02d" $new_id)
+        new_serial=$date_db$new_id
+    else
+        id1="01"
+        new_serial=$today$id1
+    fi
+}
+
+readClients()
+{
+    echo "" > .cache/clients_new.txt
+    if [ $target == 'prod' ]
+    then
+        while read url
+            do
+            status=$(curl -sL -w "%{http_code}" $url -o /dev/null)
+            if [ $status = 200  ]
+            then
+                curl -s $url >> .cache/clients_new.txt
+            else
+               DATE=`date '+%Y-%m-%d %H:%M:%S'`
+               echo "$DATE - Fora do ar: $url" >> $log
+               exit 1
+           fi
+        done < $clients
+    fi
+    n_diff=$(diff .cache/clients_new.txt .cache/clients_old.txt)
+    modifications=$(echo $n_diff | perl -nle ' print length ')
+}
+
+createDbFile()
+{
+    if [ $modifications -ne 0 ]
+    then
+        cat $head > .cache/{{ tasks_bind_subdomain }}.db
+        if [ $target == 'prod' ]
+        then
+            cat .cache/clients_new.txt >> .cache/{{ tasks_bind_subdomain }}.db
+        fi
+        cat files/domains.txt >> .cache/{{ tasks_bind_subdomain }}.db ### TEMPORARIO
+        sed -i s/__serial__/$new_serial/g .cache/{{ tasks_bind_subdomain }}.db
+
+    # se passar no teste, envia para produção
+        path_named_checkzone='/usr/sbin/named-checkzone' #$(which named-checkzone)
+        testconfig=$( ${path_named_checkzone} {{ tasks_bind_subdomain }}.{{ tasks_bind_domain }} .cache/{{ tasks_bind_subdomain }}.db | grep OK | xargs)
+        if [ $testconfig == 'OK' ]
+        then
+           cat .cache/{{ tasks_bind_subdomain }}.db > $db
+           /etc/init.d/bind9 restart
+           cat .cache/clients_new.txt > .cache/clients_old.txt
+        else
+           DATE=`date '+%Y-%m-%d %H:%M:%S'`
+           echo "$DATE - {{ tasks_bind_subdomain }}.db não passou no teste checkzone" >> $log
+        fi
+    fi
+}
+
+createCacheFolder
+readClients
+montaSerial
+createDbFile
+
+

@@ -1,0 +1,10 @@
+$TTL 86400
+$ORIGIN {{ tasks_bind_ns_ip_reverse }}.in-addr.arpa.
+
+@		      21600 IN SOA	{{ tasks_bind_ns_name }}.{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}. hostmaster.{{ tasks_bind_domain }}. 2017061203 10800 3600 2419200 86400
+
+
+           {% for fqdn in tasks_bind_name_server %}
+           21600 IN NS   {{ fqdn.ns }}.
+           {% endfor %}
+           21600 IN NS   {{ tasks_bind_ns_name }}.{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}.

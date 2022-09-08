@@ -4,6 +4,7 @@ tasks_msmtp: false
 tasks_php: false
 tasks_zoneminder: false
 tasks_cups: false
+tasks_bind: false
 
 # variáveis cups
 tasks_cups_root_password: '12345678'
@@ -12,9 +13,21 @@ tasks_cups_quotas_api_token: '123'
 tasks_cups_printers_csv: '../../files/printers.csv'
 tasks_cups_networks_csv: '../../files/networks.csv'
 tasks_cups_listen: "143.107.72.2:631"
-tasks_cups_admin_networks: 
+tasks_cups_admin_networks:
   - '10.64.0.0/22'
   - '10.180.0.0/19'
   - '192.168.8.0/24'
 
+tasks_bind_job_server: dev # dev or prod
+tasks_bind_domain: com.br
+tasks_bind_subdomain: example
+tasks_bind_ns_name: nsname
+tasks_bind_ns_ip: 192.168.8.1
+tasks_bind_ns_ip_reverse: 8.168.192
+tasks_bind_address_dns_slave:
+  - {address: '192.168.0.1'}
+  - {address: '2001:db8:cafe:1111:faca::1'}
+tasks_bind_name_server:
+  - {ns: a.example.com}
+  - {ns: b.example.com}
 

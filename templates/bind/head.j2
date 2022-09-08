@@ -1,0 +1,16 @@
+$TTL 21600
+$ORIGIN {{ tasks_bind_subdomain}}.{{ tasks_bind_domain }}.
+@	IN      SOA     {{ tasks_bind_ns_name }}.{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}. hostmaster.{{ tasks_bind_domain }}. (
+					    __serial__	; Serial
+					    10800       	; Refresh [3h]
+					    3600       	; Retry   [1h]
+					    2419200    	; Expire  [4w]
+					    86400 )    	; Minimum [24h]
+
+{% for fqdn in tasks_bind_name_server %}
+@	IN	NS	{{ fqdn.ns }}.
+{% endfor %}
+
+@       IN      NS      {{ tasks_bind_ns_name }}.{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}.
+
+{{ tasks_bind_ns_name }}.{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}. IN A {{ tasks_bind_ns_ip }}
