@@ -17,7 +17,7 @@
 
 - name: Add repository zoneminder
   apt_repository:
-    repo: "deb https://zmrepo.zoneminder.com/debian/release-{{ zoneminder_version }} buster/"
+    repo: "deb https://zmrepo.zoneminder.com/debian/release-{{ tasks_zoneminder_version }} buster/"
     state: present
     filename: zoneminder
   register: zoneminder_repo
@@ -41,7 +41,7 @@
 - name: Ativa variável global do mysql, usado na versão 1.36
   mysql_variables:
     login_user: "{{ mysql_root.username }}"
-    login_host: "{{ zoneminder_mysql.host }}"
+    login_host: "{{ tasks_zoneminder_mysql.host }}"
     login_password: "{{ mysql_root.password }}"
     variable: 'log_bin_trust_function_creators'
     value: '1'
@@ -50,33 +50,33 @@
   lineinfile:
     path: "/etc/zm/zm.conf"
     regexp: '^ZM_DB_HOST'
-    line: "ZM_DB_HOST={{ zoneminder_mysql.host }}"
+    line: "ZM_DB_HOST={{ tasks_zoneminder_mysql.host }}"
 
 - name: Change zm.conf database name
   lineinfile:
     path: "/etc/zm/zm.conf"
     regexp: '^ZM_DB_NAME'
-    line: "ZM_DB_NAME={{ zoneminder_mysql.database }}"
+    line: "ZM_DB_NAME={{ tasks_zoneminder_mysql.database }}"
 
 - name: Change zm.conf database user
   lineinfile:
     path: "/etc/zm/zm.conf"
     regexp: '^ZM_DB_USER'
-    line: "ZM_DB_USER={{ zoneminder_mysql.user }}"
+    line: "ZM_DB_USER={{ tasks_zoneminder_mysql.user }}"
 
 - name: Change zm.conf database user password
   lineinfile:
     path: "/etc/zm/zm.conf"
     regexp: '^ZM_DB_PASS'
-    line: "ZM_DB_PASS={{ zoneminder_mysql.password }}"
+    line: "ZM_DB_PASS={{ tasks_zoneminder_mysql.password }}"
 
 - name: Check if table Zones exists
   shell: >
     mysql
-    --host={{ zoneminder_mysql.host }}
-    --database={{ zoneminder_mysql.database }}
-    --user={{ zoneminder_mysql.user }}
-    --password={{ zoneminder_mysql.password }}
+    --host={{ tasks_zoneminder_mysql.host }}
+    --database={{ tasks_zoneminder_mysql.database }}
+    --user={{ tasks_zoneminder_mysql.user }}
+    --password={{ tasks_zoneminder_mysql.password }}
     -e 'SHOW TABLES;' | grep -c Zones
   register: dbstatus
   failed_when: dbstatus.rc == 2
@@ -85,15 +85,15 @@
   replace:
     path: "/usr/share/zoneminder/db/zm_create.sql"
     regexp: '`zm`'
-    replace: "`{{ zoneminder_mysql.database }}`"
+    replace: "`{{ tasks_zoneminder_mysql.database }}`"
   register: change_dbname
 
 - name: Sobe schema do zoneminder no mysql
   mysql_db:
-    name: "{{ zoneminder_mysql.database }}"
-    login_host: "{{ zoneminder_mysql.host }}"
-    login_user: "{{ zoneminder_mysql.user }}"
-    login_password: "{{ zoneminder_mysql.password }}"
+    name: "{{ tasks_zoneminder_mysql.database }}"
+    login_host: "{{ tasks_zoneminder_mysql.host }}"
+    login_user: "{{ tasks_zoneminder_mysql.user }}"
+    login_password: "{{ tasks_zoneminder_mysql.password }}"
     state: import
     target: "/usr/share/zoneminder/db/zm_create.sql"
   when: dbstatus.stdout == "0" and change_dbname is succeeded
@@ -101,7 +101,7 @@
 - name: Copia o web site template configuration
   copy:
     src: /usr/share/doc/zoneminder/examples/apache.conf
-    dest: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
+    dest: "/etc/apache2/sites-available/{{ tasks_zoneminder_apache2_confs }}.conf"
     remote_src: yes
     owner: root
     group: root
@@ -109,7 +109,7 @@
 
 - name: Muda o alias "/zm/cache" do arquivo {{ zoneminder_apache2_confs }}
   lineinfile:
-    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ tasks_zoneminder_apache2_confs }}.conf"
     regexp: '\s{4}Alias /zm/cache.'
     line: '    Alias /cache "/var/cache/zoneminder/cache"'
   notify:
@@ -117,7 +117,7 @@
 
 - name: Remove a linha do alias "/zm" do arquivo {{ zoneminder_apache2_confs }}
   lineinfile:
-    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ tasks_zoneminder_apache2_confs }}.conf"
     regexp: '\s{4}Alias /zm\s.'
     state: absent
   notify:
@@ -125,7 +125,7 @@
 
 - name: Muda o alias "/cgi-bin" do arquivo {{ zoneminder_apache2_confs }}
   lineinfile:
-    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ tasks_zoneminder_apache2_confs }}.conf"
     regexp: '\s{4}ScriptAlias /cgi-bin.'
     line: '    ScriptAlias /zm/cgi-bin "/usr/lib/zoneminder/cgi-bin"'
   notify:
@@ -133,7 +133,7 @@
 
 - name: Muda o path "/zm/api" do arquivo {{ zoneminder_apache2_confs }}
   replace:
-    path: "/etc/apache2/sites-available/{{ zoneminder_apache2_confs }}.conf"
+    path: "/etc/apache2/sites-available/{{ tasks_zoneminder_apache2_confs }}.conf"
     regexp: '(\s+RewriteBase\s)/zm/api'
     replace: '\1/api'
   notify:
@@ -141,9 +141,9 @@
 
 - name: Habilitando {{ zoneminder_apache2_confs }}.conf
   command: >
-    a2ensite {{ zoneminder_apache2_confs }}.conf
+    a2ensite {{ tasks_zoneminder_apache2_confs }}.conf
   args:
-    creates: /etc/apache2/sites-enabled/{{ zoneminder_apache2_confs }}.conf
+    creates: /etc/apache2/sites-enabled/{{ tasks_zoneminder_apache2_confs }}.conf
   notify:
     - restart apache2
 
@@ -177,7 +177,14 @@
 
 - name: copy zoneminder-event-cleanup.sh.j2 - para caso precisemos rodar na mão
   template:
-    src: ../../templates/zoneminder-event-cleanup.sh.j2
+    src: zoneminder-event-cleanup.sh.j2
     dest: /usr/local/sbin/zoneminder-event-cleanup
     owner: root
     mode: 0700
+
+- name: desabilita apache2 000-default vhost
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  notify:
+    - restart apache2

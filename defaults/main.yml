@@ -40,3 +40,13 @@ tasks_django_home: "/home/{{tasks_django_user}}"
 tasks_django_port: '8001'
 tasks_django_dir: "/home/{{tasks_django_user}}/analytics"
 tasks_django_user_password: SuperSenha123
+
+tasks_zoneminder_apache2_confs: zoneminder
+tasks_zoneminder_version: '1.36'
+tasks_zoneminder_frontend_url: 'zoneminder.example.br'
+tasks_zoneminder_mysql:
+  database: zm
+  host: '127.0.0.1'
+  user: zm
+  password: 'SuperPassword'
+
