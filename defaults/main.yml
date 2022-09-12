@@ -18,6 +18,7 @@ tasks_cups_admin_networks:
   - '10.64.0.0/22'
   - '10.180.0.0/19'
   - '192.168.8.0/24'
+tasks_cups_use_php_backend: True
 
 ###################################
 tasks_django_user: 'djangoprod'

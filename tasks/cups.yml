@@ -8,18 +8,36 @@
     - cups-tea4cups
     - pkpgcounter
 
-- name: copy quota check
+##########
+- name: copy quota check - php
   template:
     src: 'cups/tea4cups/php/quota_check.j2'
     dest: /root/quota_check
     mode: 0755
+  when: tasks_cups_use_php_backend
 
-- name: copy quota save 
+- name: copy quota save  - php
   template:
     src: 'cups/tea4cups/php/quota_save.j2'
     dest: '/root/quota_save'
     mode: 0755
+  when: tasks_cups_use_php_backend
 
+- name: copy quota check - python
+  template:
+    src: 'cups/tea4cups/python/quota_check.j2'
+    dest: /root/quota_check
+    mode: 0755
+  when: not tasks_cups_use_php_backend
+
+- name: copy quota save - python
+  template:
+    src: 'cups/tea4cups/python/quota_save.j2'
+    dest: '/root/quota_save'
+    mode: 0755
+  when: not tasks_cups_use_php_backend
+
+##########
 - name: quota check line  on /etc/cups/tea4cups.conf
   lineinfile:
     path: '/etc/cups/tea4cups.conf'
