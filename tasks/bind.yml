@@ -1,0 +1,128 @@
+- name: Install a list of packages
+  apt:
+    pkg:
+    - dnsutils
+    - bind9
+    - curl
+
+- name: cria os diretórios "keys, master, slave"
+  file:
+    path: "/var/cache/bind/{{ item }}"
+    state: directory
+    recurse: yes
+    owner: bind
+    group: bind
+  with_items:
+    - keys
+    - master
+    - slave
+
+- name: copia named.conf.options
+  template:
+    src: 'bind/named.conf.options.j2'
+    dest: '/etc/bind/named.conf.options'
+    owner: root
+    group: bind
+    mode: 0644
+
+- name: copia named.conf.default-zones
+  template:
+    src: 'bind/named.conf.default-zones.j2'
+    dest: '/etc/bind/named.conf.default-zones'
+    owner: root
+    group: bind
+    mode: 0644
+
+- name: obtêm o valor do rndc.key
+  slurp:
+    src: /etc/bind/rndc.key
+  register: rndc
+
+- name: copia o valor do register rndc para o named.conf.options
+  blockinfile:
+    path: /etc/bind/named.conf.options
+    insertbefore: '^controls\s{'
+    block: "{{ rndc['content'] | b64decode }}"
+
+- name: Copy /var/cache/bind/keys
+  copy:
+    src: ../../files/bind/keys/
+    dest: /var/cache/bind/keys
+    mode: '0644'
+
+- name: copy /var/cache/bind/master/{{ tasks_bind_subdomain }}.rev
+  template:
+    src: 'bind/reverso.rev.j2'
+    dest: '/var/cache/bind/master/{{ tasks_bind_subdomain }}.rev'
+    owner: root
+    group: bind
+    mode: 0644
+
+- name: Create links
+  file:
+    src: '/var/cache/bind/{{ item }}'
+    dest: '/etc/bind/{{ item}}'
+    state: link
+  loop:
+    - keys
+    - master
+    - slave
+
+- name: cria diretório /var/log/named
+  file:
+    dest: "/var/log/named"
+    recurse: yes
+    state: directory
+    owner: bind
+    group: bind
+  notify:
+    - restart bind9
+
+- name: cria diretório /root
+  file:
+    dest: "{{item}}"
+    recurse: yes
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "/root/build_zone_records"
+    - "/root/build_zone_records/files"
+    - "/root/build_zone_records/clients"
+    - "/root/build_zone_records/.cache"
+
+- name: copia o main para build_zone_records
+  template:
+    src: "bind/main.j2"
+    dest: "/root/build_zone_records/main.sh"
+    owner: root
+    group: bind
+    mode: 0700
+
+- name: copia o head para build_zone_records
+  template:
+    src: "bind/head.j2"
+    dest: "/root/build_zone_records/files/head.txt"
+    owner: root
+    group: bind
+    mode: 0600
+
+- name: copia os arquivos do build_zone_records
+  copy:
+    src: "../../files/bind/"
+    dest: "/root/build_zone_records/files/"
+    owner: root
+    group: bind
+    mode: 0600
+
+- name: força rodar o main.sh quando rodarmos o playbook
+  shell: 'echo "ok" > /root/build_zone_records/.cache/clients_old.txt'
+  tags:
+    - teste
+
+- name: roda script dns no cron
+  cron:
+    name: "build_zone_records"
+    minute: "*/1"
+    job: "cd /root/build_zone_records && ./main.sh {{ tasks_bind_job_server | default('prod', true) }}"
+    user: root

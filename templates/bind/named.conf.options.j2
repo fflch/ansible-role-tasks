@@ -1,0 +1,149 @@
+options {
+        directory "/var/cache/bind";
+
+        allow-transfer { slaves; };
+        also-notify { notifyslaves; };
+
+        recursion no;
+
+        // fetches-per-server 350;
+        max-ncache-ttl 3600;  // 3600 seconds is one hour
+
+        transfers-out 300;
+        transfers-in 300;
+
+        // If there is a firewall between you and nameservers you want
+        // to talk to, you may need to fix the firewall to allow multiple
+        // ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+        //========================================================================
+        // If BIND logs error messages about the root key being expired,
+        // you will need to update your keys.  See https://www.isc.org/bind-keys
+        //========================================================================
+        dnssec-enable yes;
+        dnssec-validation auto;
+
+        key-directory "/var/cache/bind/keys";
+        sig-validity-interval 10 6;
+        dnssec-loadkeys-interval 15;
+
+        auth-nxdomain no;    # conform to RFC1035
+
+        listen-on-v6 { any; };
+};
+
+statistics-channels {
+        inet *  port  8053 allow { 127.0.0.1; ::1;  };
+};
+
+controls {
+    inet * allow { 127.0.0.1; localhost; } keys { "rndc-key"; };
+};
+
+acl slaves {
+         127.0.0.1;
+         ::1;
+    {% for ip in tasks_bind_address_dns_slave %}
+     {{ ip.address }};
+    {% endfor %}
+};
+
+masters notifyslaves {
+         127.0.0.1;
+    {% for ip in tasks_bind_address_dns_slave %}
+     {{ ip.address }};
+    {% endfor %}
+};
+
+logging {
+        channel my_default {
+                file "/var/log/named/named.log" versions 30 size 500M;
+                severity info;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+        };
+
+        channel my_xfers {
+                file "/var/log/named/xfers.log" versions 10 size 500M;
+                severity info;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+        };
+
+        channel query_info {
+                file "/var/log/named/queries.log" versions 30 size 500M;
+                severity info;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+        };
+        channel update_info {
+                file "/var/log/named/updates.log" versions 10 size 500M;
+                severity info;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+        };
+
+        channel security_info {
+                file "/var/log/named/security.log" versions 10 size 500M;
+                severity info;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+        };
+
+        channel dnssec_log {
+                file "/var/log/named/dnssec.log"  versions 10 size 500M;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+//              severity debug 3;
+        };
+
+        channel resolver_log {
+                file "/var/log/named/resolver.log"  versions 4 size 500M;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+//              severity debug 3;
+                severity info;
+        };
+
+         channel query-errors-log {
+                file "/var/log/named/query-errors.log" versions 3 size 500M;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+                severity debug;
+       };
+
+        channel syslog_central {
+                syslog local5;
+                severity info;
+                print-time yes;
+                print-category yes;
+                print-severity yes;
+        };
+
+        category default { my_default; default_debug; syslog_central; };
+        category xfer-in { my_xfers; default_debug; syslog_central; };
+        category xfer-out { my_xfers; default_debug; syslog_central; };
+        category security { security_info; syslog_central; };
+        category dnssec { dnssec_log; };
+        category config { syslog_central; };
+        category lame-servers { null; };
+        category edns-disabled { resolver_log; };
+#       category edns-disabled { null; };
+        category resolver { resolver_log; };
+#       category resolver { null; };
+        category query-errors { query-errors-log; };
+
+        category update { update_info; syslog_central; };
+        category update-security { update_info; syslog_central; };
+        category queries { query_info; };
+        category resolver { query_info; };
+
+};
