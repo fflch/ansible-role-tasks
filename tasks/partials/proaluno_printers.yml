@@ -2,8 +2,8 @@
 #### Impressoras da próaluno
 
 - name: Copy ppds K7600
-  copy:
-    src: "../../files/ppds/{{item}}"
+  template:
+    src: "ppds/{{item}}"
     dest: "/usr/share/cups/model/{{item}}"
     mode: '0755'
   loop:
