@@ -74,7 +74,7 @@
     cups_expect_pkgs: 
       - expect
     cups_ricoh_openprinting_ppds: False
-    cups_purge_all_printers_and_classes: False
+    cups_purge_all_printers_and_classes: True
     cups_packages_to_install:
       - cups
       - cups-pdf
@@ -94,10 +94,10 @@
     src: cups/override.conf
     dest: /etc/systemd/system/org.cups.cupsd.socket.d/override.conf
 
-- name: change root's password
+- name: change root password
   user:
     name: root
-    password: tasks_cups_root_password
+    password: " {{ tasks_cups_root_password | password_hash('sha512') }}"
 
 - name: Restart service
   service:
