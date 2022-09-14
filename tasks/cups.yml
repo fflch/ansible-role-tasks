@@ -63,8 +63,6 @@
 ###### Redes permitidas - Fim
 
 - include: partials/printers.yml
-- include: partials/proaluno_printers.yml
-- include: partials/pdfprinter.yml
 
 - name:
   include_role:
@@ -82,6 +80,10 @@
       - printer-driver-all
       - hp-ppd
       - openprinting-ppds
+
+# Instalação manual de impressoras - sem usar a role
+- include: partials/proaluno_printers.yml
+- include: partials/pdfprinter.yml
 
 - name: org.cups.cupsd.socket.d
   file:
