@@ -64,6 +64,7 @@
 
 - include: partials/printers.yml
 - include: partials/proaluno_printers.yml
+- include: partials/pdfprinter.yml
 
 - name:
   include_role:
