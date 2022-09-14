@@ -10,7 +10,7 @@
 - name: Install pdfprinter
   shell: >
     /usr/sbin/lpadmin -p pdfprinter  
-    -v cups-pdf:/
+    -v tea4cups:cups-pdf:/
     -P /usr/share/ppd/cups-pdf/CUPS-PDF.ppd
     -o printer-error-policy=abort-job
     -o printer-is-shared=true
