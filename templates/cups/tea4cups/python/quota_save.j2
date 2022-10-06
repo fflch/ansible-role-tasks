@@ -6,7 +6,7 @@ import requests
 import traceback
 
 try:
-    url = "{{ tasks_cups_quotas_endpoint }}/api/printings/"
+    url = "{{ tasks_cups_quotas_endpoint }}/api/printings"
     api_key = "{{ tasks_cups_quotas_api_token }}"
     headers = {'Authorization': api_key}
 
@@ -21,7 +21,7 @@ try:
 
     body = {"status": latest_status}
 
-    requests.post(url + printer + '/' +  jobid, headers=headers, data=body)
+    requests.post(url + '/' + printer + '/' +  jobid, headers=headers, data=body)
 
 except Exception:
     log = traceback.format_exc()

@@ -11,7 +11,7 @@ import traceback
 # Registrando model printing 
 
 try:
-    url = "{{ tasks_cups_quotas_endpoint }}/api/printings/"
+    url = "{{ tasks_cups_quotas_endpoint }}/api/printings"
     api_key = "{{ tasks_cups_quotas_api_token }}"
     headers = {'Authorization': api_key}
 
@@ -48,7 +48,7 @@ try:
 
         for i in range(120):
             time.sleep(1)
-            response = requests.get(url + printing_id, headers=headers)
+            response = requests.get(url + '/' + printing_id, headers=headers)
             latest_status = response.json()["latest_status"]
 
             if latest_status == "sent_to_printer_queue":
@@ -58,7 +58,7 @@ try:
                 exit(-1)
 
         body  = {"status": "cancelled_timeout"}
-        requests.post(url + printing_id, headers=headers, data=body)
+        requests.post(url + '/' + printing_id, headers=headers, data=body)
 
         exit(-1)
 
@@ -68,7 +68,7 @@ try:
         file_object.write("\n" + log)
         file_object.close()
         body  = {"status": "printer_problem"}
-        requests.post(url + printing_id, headers=headers, data=body)
+        requests.post(url + '/' + printing_id, headers=headers, data=body)
 
         exit(-1)
         
@@ -80,6 +80,6 @@ except Exception as err:
     file_object.close()
 
     body  = {"status": "printer_problem"}
-    requests.post(url + printing_id, headers=headers, data=body)
+    requests.post(url + '/' + printing_id, headers=headers, data=body)
 
     exit(-1)
