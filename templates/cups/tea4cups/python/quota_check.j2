@@ -46,7 +46,7 @@ try:
 
         printing_id = str(data["printing_id"])
 
-        for i in range(120):
+        for i in range(60):
             time.sleep(1)
             response = requests.get(url + '/' + printing_id, headers=headers)
             latest_status = response.json()["latest_status"]
@@ -58,7 +58,7 @@ try:
                 exit(-1)
 
         body  = {"status": "cancelled_timeout"}
-        requests.post(url + '/' + printing_id, headers=headers, data=body)
+        requests.post(url + '/' + printer + '/' +  jobid, headers=headers, data=body)
 
         exit(-1)
 
