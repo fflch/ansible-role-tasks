@@ -47,9 +47,9 @@ try:
         printing_id = str(data["printing_id"])
 
         for i in range(120):
-        time.sleep(1)
-        response = requests.get(url + '/' + printing_id, headers=headers)
-        latest_status = response.json()["latest_status"]
+            time.sleep(1)
+            response = requests.get(url + '/' + printing_id, headers=headers)
+            latest_status = response.json()["latest_status"]
 
             if latest_status == "sent_to_printer_queue":
                 exit(0)
