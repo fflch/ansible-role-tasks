@@ -6,7 +6,34 @@
   vars:
     packages:
     - cups-tea4cups
-    - pkpgcounter
+    - subversion
+    - python2
+
+########## instalação do pip2 para instala o pkpgcounter
+- name: Download get-pip.py
+  ansible.builtin.get_url:
+    url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+    dest: /opt/get-pip.py
+
+- name: "install pip2"
+  shell: python2 get-pip.py
+  args:
+    chdir: /opt/
+
+- name: "install pip2 pillow"
+  shell: python2 -m pip install pillow
+
+########## instalação do pkpgcounter
+- name: Checkout pkpgcounter
+  subversion:
+    repo: http://svn.pykota.com/pkpgcounter/trunk
+    dest: /opt/pkpgcounter
+    in_place: yes
+
+- name: "install pkpgcounter"
+  shell: /usr/bin/python2 setup.py install
+  args:
+    chdir: /opt/pkpgcounter
 
 ##########
 - name: copy quota check - php

@@ -17,7 +17,10 @@ try:
 
     user = os.getenv('TEAUSERNAME')
     datafile = os.getenv('TEADATAFILE')
-    pages = subprocess.check_output(['/usr/bin/pkpgcounter', datafile])
+    
+    #pages = subprocess.check_output(['/usr/bin/pkpgcounter', datafile])
+    pages = subprocess.check_output(['/usr/local/bin/pkpgcounter', datafile])
+    
     copies = os.getenv('TEACOPIES')
     printer = os.getenv('TEAPRINTERNAME')
     jobid = os.getenv('TEAJOBID')

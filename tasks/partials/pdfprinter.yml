@@ -7,11 +7,16 @@
      packages:
      - printer-driver-cups-pdf
 
+# debian 9
+#    -P /usr/share/ppd/cups-pdf/CUPS-PDF.ppd
+# debian 11
+#    -P /usr/share/ppd/cups-pdf/CUPS-PDF_opt.ppd
+
 - name: Install pdfprinter
   shell: >
     /usr/sbin/lpadmin -p pdfprinter  
     -v tea4cups:cups-pdf:/
-    -P /usr/share/ppd/cups-pdf/CUPS-PDF.ppd
+    -P /usr/share/ppd/cups-pdf/CUPS-PDF_opt.ppd
     -o printer-error-policy=abort-job
     -o printer-is-shared=true
     -o PageSize=A4
