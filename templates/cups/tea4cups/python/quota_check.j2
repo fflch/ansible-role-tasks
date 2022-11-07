@@ -28,6 +28,12 @@ try:
     filename = os.getenv('TEATITLE')
     filesize = os.getenv('TEAJOBSIZE')
 
+    # hotfix: Após atualização do cups, TEACLIENTHOST passou a vir vazia
+    # http://lists.pykota.com/pipermail/tea4cups/2013-September/000280.html
+    # é necessário investigar como corrigir esse problema
+    if host == '':
+        host='143.107.72.189'
+
     body = {'user': user,
             'pages': int(pages),
             'copies': copies,
@@ -39,8 +45,14 @@ try:
             }
 
     response = requests.post(url, headers=headers, data=body)
-    status_code = response.status_code
 
+    # guardando o retorno no log
+    file_object = open("/tmp/tea4cups.log", "a+")
+    datetime = datetime.datetime.now()
+    file_object.write("\n[{}]\n".format(datetime) + str(response.json()))
+    file_object.close()
+
+    status_code = response.status_code
     if status_code == 200:
         data = response.json()
 
@@ -68,7 +80,7 @@ try:
     else:
         log = "Status code returned: " + str(status_code)
         file_object = open("/tmp/tea4cups.log", "a+")
-        file_object.write("\n" + log)
+        file_object.write("\n" + str(log))
         file_object.close()
         body  = {"status": "printer_problem"}
         requests.post(url + '/' + printer + '/' +  jobid, headers=headers, data=body)
@@ -79,7 +91,7 @@ except Exception as err:
     log = traceback.format_exc()
     file_object = open("/tmp/tea4cups.log", "a+")
     datetime = datetime.datetime.now()
-    file_object.write("\n[{}]\n".format(datetime) + log)
+    file_object.write("\n[{}]\n".format(datetime) + str(log))
     file_object.close()
 
     body  = {"status": "printer_problem"}
