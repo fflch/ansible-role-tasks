@@ -14,6 +14,7 @@
     - msmtp
     - curl
     - git
+    - mariadb-client
 
 - name: Corrige o timezone para America/Sao_Paulo
   include_role:
