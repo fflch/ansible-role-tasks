@@ -17,3 +17,6 @@
 
 - include: django.yml
   when: tasks_django
+
+- include: nginxrevproxy.yml
+  when: tasks_nginxrevproxy

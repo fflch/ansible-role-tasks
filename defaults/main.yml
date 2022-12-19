@@ -6,6 +6,7 @@ tasks_cups: false
 tasks_bind: false
 tasks_sambadc: false
 tasks_django: false
+tasks_nginxrevproxy: false
 
 ###################################
 # variáveis cups
@@ -52,3 +53,10 @@ tasks_zoneminder_mysql:
   user: zm
   password: 'SuperPassword'
 
+###################################
+nginx_ssl_env: False
+nginx_revproxy_remove_webroot_sites: false
+nginx_revproxy_de_activate_sites: false
+nginx_aegir_sites: false
+nginx_domains_from_csv: false
+nginx_domains_temp_from_csv: false
