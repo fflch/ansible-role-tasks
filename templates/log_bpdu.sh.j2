@@ -1,0 +1,18 @@
+#!/bin/bash
+
+today=`date +"%Y/%m/%d"`
+where='/var/syslog/hosts'
+body=$(for ip in `ls $where | grep 10.68`; do grep -ir BPDU $where/$ip/$today; done)
+
+# Envio do Email - quando body não estã vazio
+if [ ! -z "$body" ]
+then
+  d=$(date +%d/%m/%Y)
+  assunto="STI-FFLCH - L2 - Portas com Loop encontradas em ${d}"
+  body="<div>Prezados(as), por favor  localizem as seguintes portas com loop L2:</div><br>${body}"
+  mail="From: fffchsti@usp.br\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
+  {%for email in rsyslog_emails %}
+echo -e ${mail} | msmtp {{ email.email }}
+  {% endfor %}
+
+fi

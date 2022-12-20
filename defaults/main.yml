@@ -8,6 +8,7 @@ tasks_sambadc: false
 tasks_django: false
 tasks_nginxrevproxy: false
 tasks_freeradius: false
+tasks_rsyslog: false
 
 ###################################
 # variáveis cups
@@ -70,3 +71,11 @@ freeradius_mysql:
   host: 192.168.8.10
   user: freeradius
   password: SuperPassw0rd
+
+###################################
+rsyslog_ip_laravel: 192.168.8.92
+rsyslog_emails:
+  - {email: 'email1@usp.br'}
+  - {email: 'email2@usp.br'}
+  - {email: 'email3@usp.br'}
+  - {email: 'email4@usp.br'}

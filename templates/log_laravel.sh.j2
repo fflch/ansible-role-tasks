@@ -1,0 +1,23 @@
+#!/bin/bash
+
+body=''
+
+### Report Laravel ###
+where="/var/syslog/hosts/{{ rsyslog_ip_laravel }}/phpserver/$(date +%Y)/$(date +%m)/$(date +%d)/user.log"
+laravel=$(cat $where | grep 'production.ERROR' | sed 's/$/<br><br>/')
+[[ ! -z "$laravel" ]] && body="${body}<h3>Log nos sistema em Laravel:</h3>${laravel}"
+
+# Falta fazer o log das portas com loop
+
+# Envio do Email - quando body não estã vazio
+if [ ! -z "$body" ]
+then
+  d=$(date +%d/%m/%Y)
+  assunto="Relatório de problemas na Infraestutura FFLCH - ${d}"
+  body="<div>Prezados(as) Analistas, por favor solucionar erros críticos encontrados a partir do servidor de log:</div><br>${body}"
+  mail="From: fffchsti@usp.br\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
+  {%for email in rsyslog_emails %}
+echo -e ${mail} | msmtp {{ email.email }}
+  {% endfor %}
+
+fi

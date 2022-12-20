@@ -1,0 +1,43 @@
+# FALTA INSTALAR mariadb-client
+
+- name: Creates directory
+  file:
+    path: /var/syslog/hosts
+    state: directory
+    recurse: yes
+
+- name: Copia log_laravel.sh.j2
+  template:
+    src: log_laravel.sh.j2
+    dest: /root/.log_laravel.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: roda script report no cron
+  cron:
+    name: "log_laravel.sh"
+    minute: "0"
+    hour: "20"
+    job: "/root/.log_laravel.sh"
+    user: root
+
+- name: Copia log_bpdu.sh.j2
+  template:
+    src: log_bpdu.sh.j2
+    dest: /root/.log_bpdu.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: roda script report no cron bpdu
+  cron:
+    name: "log_bpdu.sh"
+    minute: "0"
+    hour: "*/6"
+    job: "/root/.log_bpdu.sh"
+    user: root
+
+# Rodando na mão:
+# logrotate --force /etc/logrotate.conf
+
