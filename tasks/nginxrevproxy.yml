@@ -150,7 +150,7 @@
 
 - name: Copia certificates.sh.j2
   template:
-    src: ../../templates/certificates.sh.j2
+    src: certificates.sh.j2
     dest: /usr/local/bin/certificates.sh
     owner: root
     group: root
