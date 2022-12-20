@@ -7,6 +7,7 @@ tasks_bind: false
 tasks_sambadc: false
 tasks_django: false
 tasks_nginxrevproxy: false
+tasks_freeradius: false
 
 ###################################
 # variáveis cups
@@ -60,3 +61,12 @@ nginx_revproxy_de_activate_sites: false
 nginx_aegir_sites: false
 nginx_domains_from_csv: false
 nginx_domains_temp_from_csv: false
+
+###################################
+freeradius_secret: SuperPass0rd
+freeradius_version: "3.0"
+freeradius_mysql:
+  database: freeradius
+  host: 192.168.8.10
+  user: freeradius
+  password: SuperPassw0rd

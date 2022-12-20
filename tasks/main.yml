@@ -20,3 +20,6 @@
 
 - include: nginxrevproxy.yml
   when: tasks_nginxrevproxy
+
+- include: freeradius.yml
+  when: tasks_freeradius
