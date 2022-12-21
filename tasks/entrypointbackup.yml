@@ -1,0 +1,17 @@
+- name: Install a list of packages
+  apt:
+    pkg:
+    - rsync
+
+- name: Set authorized key
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ entrypointbackup_public_key }}"
+
+- name: create directories for vagrant
+  file:
+    path: "/backupsfflch/{{ item }}"
+    state: directory
+    recurse: yes
+  loop: "{{ groups['vagrant'] }}"

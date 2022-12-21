@@ -9,6 +9,7 @@ tasks_django: false
 tasks_nginxrevproxy: false
 tasks_freeradius: false
 tasks_rsyslog: false
+tasks_entrypointbackup: false
 
 ###################################
 # variáveis cups
@@ -79,3 +80,6 @@ rsyslog_emails:
   - {email: 'email2@usp.br'}
   - {email: 'email3@usp.br'}
   - {email: 'email4@usp.br'}
+
+###################################
+entrypointbackup_public_key: "ssh-rsa SshPublicKey"
