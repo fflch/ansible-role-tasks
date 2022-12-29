@@ -9,7 +9,11 @@
     - default-libmysqlclient-dev
     - python3-venv
     - python3-pillow
+    - python3-setuptools
     - python3-lxml
+    - python-pillow
+    - python-setuptools
+    - python-lxml
     - libpam-systemd
     - systemd-container
 
@@ -17,7 +21,7 @@
   include_role:
     name: gforcada.compile-python
   vars:
-    python_27: true
+    python_27: false
     python_36: true
     python_39: true
     python_310: true
