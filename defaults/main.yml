@@ -39,14 +39,6 @@ tasks_bind_name_server:
   - {ns: b.example.com}
 
 ###################################
-# transforma em lista para subir vários apps no mesmo server
-tasks_django_name: 'analytics'
-tasks_django_dir: "/root/analytics"
-tasks_django_port: '8001'
-tasks_django_env: []
-
-
-###################################
 tasks_zoneminder_apache2_confs: zoneminder
 tasks_zoneminder_version: '1.36'
 tasks_zoneminder_frontend_url: 'zoneminder.example.br'
