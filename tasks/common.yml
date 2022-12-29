@@ -28,6 +28,7 @@
   vars:
     locales_to_configure:
       - name: 'en_US.UTF-8'
+        modifier: 'en_US.UTF-8'
       - name: 'pt_BR.UTF-8'
         modifier: 'UTF-8'
     locales_defaults:
