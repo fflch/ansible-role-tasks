@@ -30,3 +30,6 @@
 
 - include: entrypointbackup.yml
   when: tasks_entrypointbackup
+
+- include: ftp.yml
+  when: tasks_ftp

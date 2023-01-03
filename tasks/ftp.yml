@@ -1,0 +1,21 @@
+- name: Install a list vsftpd packages 
+  apt:
+    pkg:
+    - vsftpd
+
+- name: create ftpuser
+  user:
+    name: "ftpuser"
+    password: "{{ tasks_ftpuser_password|password_hash('sha512') }}"
+    home: "/home/ftpuser/"
+    state: present
+
+- name: Copy vsftpd.conf.j2
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: 
+    - restart vsftpd

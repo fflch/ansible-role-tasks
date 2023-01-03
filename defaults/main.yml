@@ -10,7 +10,7 @@ tasks_nginxrevproxy: false
 tasks_freeradius: false
 tasks_rsyslog: false
 tasks_entrypointbackup: false
-
+tasks_ftp: false
 
 # msmtp
 tasks_msmtp_email: 'testes.sti.fflch@usp.br'
@@ -92,6 +92,8 @@ tasks_nginx_revproxy_sites_extras:
     ssl: True
     letsencrypt: False
     letsencrypt_email: "fflchsti@usp.br"
-
+  
+# ftp
+tasks_ftpuser_password: 123
 
 
