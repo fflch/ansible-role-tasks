@@ -1,5 +1,23 @@
 # csv dos swicthes
 
+- name: install freeradius
+  apt:
+    state: latest
+    update_cache: yes
+    pkg:
+      - freeradius
+      - freeradius-mysql
+      - freeradius-utils
+      - default-libmysqlclient-dev
+      - mariadb-client
+
+- include_role:
+    name: geerlingguy.pip
+  vars:
+    pip_package: python3-pip
+    pip_install_packages:
+      - pymysql
+
 - name: read from file
   set_fact:
     switchesfile: "{{ lookup('file', '../../files/switches.csv') }}"
@@ -22,34 +40,6 @@
   with_items:
     - "{{ switches }}"
 
-# Global variables
-
-- name: Initialize freeradius_secret
-  set_fact:
-    freeradius_secret: "{{ freeradius_secret }}"
-
-- name: Initialize freeradius_version
-  set_fact:
-    freeradius_version: "{{ freeradius_version }}"
-
-- name: install freeradius
-  apt:
-    state: latest
-    update_cache: yes
-    pkg:
-      - freeradius
-      - freeradius-mysql
-      - freeradius-utils
-      - default-libmysqlclient-dev
-      - mariadb-client
-
-- include_role:
-    name: geerlingguy.pip
-  vars:
-    pip_package: python3-pip
-    pip_install_packages:
-      - pymysql
-
 - name: enable freeradius
   service:
     name: freeradius
@@ -58,20 +48,20 @@
 - name: check if table radcheck exists
   shell: >
     mysql
-    --host={{ freeradius_mysql.host }}
-    --database={{ freeradius_mysql.database }}
-    --user={{ freeradius_mysql.user }}
-    --password={{ freeradius_mysql.password }}
+    --host={{ tasks_freeradius_mysql.host }}
+    --database={{ tasks_freeradius_mysql.database }}
+    --user={{ tasks_freeradius_mysql.user }}
+    --password={{ tasks_freeradius_mysql.password }}
     -e 'SHOW TABLES;' | grep -c radcheck
   register: dbstatus
   failed_when: dbstatus.rc == 2
 
 - name: Sobe schema do mysql
   mysql_db:
-    name: "{{ freeradius_mysql.database }}"
-    login_host: "{{ freeradius_mysql.host }}"
-    login_user: "{{ freeradius_mysql.user }}"
-    login_password: "{{ freeradius_mysql.password }}"
+    name: "{{ tasks_freeradius_mysql.database }}"
+    login_host: "{{ tasks_freeradius_mysql.host }}"
+    login_user: "{{ tasks_freeradius_mysql.user }}"
+    login_password: "{{ tasks_freeradius_mysql.password }}"
     state: import
     target: "/etc/freeradius/{{ freeradius_version }}/mods-config/sql/main/mysql/schema.sql"
   when: dbstatus.stdout == "0"
@@ -79,12 +69,12 @@
 - name: clients.j2
   template:
     src: "clients_freeradius.j2"
-    dest: "/etc/freeradius/{{ freeradius_version }}/clients.conf"
+    dest: "/etc/freeradius/{{ tasks_freeradius_version }}/clients.conf"
 
 - name: radius.sql.j2
   template:
     src: "radiusd.conf.j2"
-    dest: "/etc/freeradius/{{ freeradius_version }}/radiusd.conf"
+    dest: "/etc/freeradius/{{ tasks_freeradius_version }}/radiusd.conf"
     unsafe_writes: yes
     owner: freerad
     group: freerad
@@ -92,7 +82,7 @@
 - name: radius sql
   template:
     src: "freeradius.sql.j2"
-    dest: "/etc/freeradius/{{ freeradius_version }}/mods-available/sql"
+    dest: "/etc/freeradius/{{ tasks_freeradius_version }}/mods-available/sql"
     owner: freerad
     group: freerad
 
