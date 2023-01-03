@@ -10,10 +10,10 @@ then
   d=$(date +%d/%m/%Y)
   assunto="STI-FFLCH - L2 - Portas com Loop encontradas em ${d}"
   body="<div>Prezados(as), por favor  localizem as seguintes portas com loop L2:</div><br>${body}"
-  mail="From: fffchsti@usp.br\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
+  mail="From: {{ tasks_msmtp_email }}\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
   
-  {%for email in tasks_rsyslog_emails %}
-    echo -e ${mail} | msmtp {{ email.email }}
+  {%for email in tasks_msmtp_emails %}
+    echo -e ${mail} | msmtp {{ email }}
   {% endfor %}
 
 fi

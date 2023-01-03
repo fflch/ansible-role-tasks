@@ -14,10 +14,10 @@ then
   d=$(date +%d/%m/%Y)
   assunto="Relatório de problemas na Infraestutura FFLCH - ${d}"
   body="<div>Prezados(as) Analistas, por favor solucionar erros críticos encontrados a partir do servidor de log:</div><br>${body}"
-  mail="From: fffchsti@usp.br\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
+  mail="From: {{ tasks_msmtp_email }}\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
 
-  {%for email in tasks_rsyslog_emails %}
-    echo -e ${mail} | msmtp {{ email.email }}
+  {%for email in tasks_msmtp_emails %}
+    echo -e ${mail} | msmtp {{ email }}
   {% endfor %}
 
 fi

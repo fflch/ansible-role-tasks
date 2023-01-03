@@ -11,7 +11,14 @@ tasks_freeradius: false
 tasks_rsyslog: false
 tasks_entrypointbackup: false
 
-###################################
+
+# msmtp
+tasks_msmtp_email: 'testes.sti.fflch@usp.br'
+tasks_msmtp_password: '123'
+tasks_msmtp_emails:
+  - 'email1@usp.br'
+  - 'email2@usp.br'
+
 # variáveis cups
 tasks_cups_root_password: '12345678'
 tasks_cups_quotas_endpoint: 'http://127.0.0.1/x'
@@ -59,23 +66,18 @@ tasks_freeradius_mysql:
 
 ###################################
 tasks_rsyslog_ip_laravel: 192.168.8.92
-tasks_rsyslog_emails:
-  - {email: 'email1@usp.br'}
-  - {email: 'email2@usp.br'}
-
-###################################
-nginx_ssl_env: False
-nginx_revproxy_remove_webroot_sites: false
-nginx_revproxy_de_activate_sites: false
-nginx_aegir_sites: false
-nginx_domains_from_csv: false
-nginx_domains_temp_from_csv: false
 
 ###################################
 tasks_id_rsa: "{{ lookup('file', 'templates/id_rsa.j2') }}"
 tasks_id_rsa_pub: "{{ lookup('file', 'templates/id_rsa.pub.j2') }}"
 
 ###################################
-entrypointbackup_public_key: "ssh-rsa SshPublicKey"
+tasks_nginx_sites: http://aegird8.fflch.usp.br/sites/aegird8.fflch.usp.br/files/fflch_domains.txt
+nginx_ssl_env: False
+nginx_revproxy_remove_webroot_sites: false
+nginx_revproxy_de_activate_sites: false
+nginx_aegir_sites: false
+nginx_domains_from_csv: false
+nginx_domains_temp_from_csv: false
 
 

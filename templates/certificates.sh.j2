@@ -1,6 +1,6 @@
 #!/bin/bash
 
-url='http://aegird8.fflch.usp.br/sites/aegird8.fflch.usp.br/files/fflch_domains.txt'
+url='{{ tasks_nginx_sites }}'
 body=''
 
 certbot certificates > /tmp/certificates.txt 2>&1
@@ -39,9 +39,8 @@ if [[ ! -z $body ]]; then
   assunto="Relatório de problemas com Certificados HTTPS - ${d}"
   body="<div>Prezados(as) analistas, por favor verificar os seguintes problemas:</div><br>${body}"
   mail="From: fffchsti@usp.br\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
-  echo -e ${mail} | msmtp servidor1@usp.br
-  echo -e ${mail} | msmtp servidor2@usp.br
-  echo -e ${mail} | msmtp servidor3@usp.br
-  echo -e ${mail} | msmtp servidor4@usp.br
-  echo -e ${mail} | msmtp servidor5@usp.br
+
+  {%for email in tasks_msmtp_emails %}
+    echo -e ${mail} | msmtp {{ email }}
+  {% endfor %}
 fi

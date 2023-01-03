@@ -7,7 +7,7 @@
   authorized_key:
     user: root
     state: present
-    key: "{{ entrypointbackup_public_key }}"
+    key: "{{ tasks_id_rsa_pub }}"
 
 - name: create directories for vagrant
   file:

@@ -12,6 +12,6 @@ account  default
 host     smtp.gmail.com
 port     587
 auth     on
-from     {{ msmtp_email }}
-user     {{ msmtp_email }}
-password {{ msmtp_password }}
+from     {{ tasks_msmtp_email }}
+user     {{ tasks_msmtp_email }}
+password {{ tasks_msmtp_password }}
