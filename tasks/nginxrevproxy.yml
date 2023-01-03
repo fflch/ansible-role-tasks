@@ -3,43 +3,6 @@
   set_fact:
     nginx_revproxy_sites: []
 
-######################## sistemas domains_temp.csv em https
-- name: read from file
-  set_fact:
-    domains_temp_file: "{{ lookup('file', '../../files/domains_temp.csv') }}"
-
-- name: csv to list
-  set_fact:
-   domains_temp: "{{ domains_temp_file.split('\n') }}"
-
-- name: build nginx_revproxy_sites
-  set_fact:
-    nginx_revproxy_sites: >
-      {{ nginx_revproxy_sites +
-        [{
-          item.split(',')[0] + '.fflch.usp.br':
-            {
-              'client_max_body_size' : '128M',
-              'proxy_read_timeout'   : '360',
-              'ssl'                  : nginx_ssl_env,
-              'letsencrypt'          : nginx_ssl_env,
-              'letsencrypt_email'    : 'fflchsti@usp.br',
-              'domains' : [
-                item.split(',')[0] + '.fflch.usp.br',
-                'www.' + item.split(',')[0] + '.fflch.usp.br'
-              ],
-              'upstreams' : [{
-                'backend_address': item.split(',')[1],
-                'backend_port': 8001
-              }]
-            }
-        }]
-      }}
-  with_items:
-    - "{{ domains_temp }}"
-  when: 
-    - nginx_domains_temp_from_csv
-
 ######################## sistemas domains.csv em https
 - name: read from file
   set_fact:
@@ -58,8 +21,8 @@
             {
               'client_max_body_size' : '128M',
               'proxy_read_timeout'   : '360',
-              'ssl'                  : nginx_ssl_env,
-              'letsencrypt'          : nginx_ssl_env,
+              'ssl'                  : tasks_nginx_ssl,
+              'letsencrypt'          : tasks_nginx_letsencrypt,
               'letsencrypt_email'    : 'fflchsti@usp.br',
               'domains' : [
                 item.split(',')[0] + '.fflch.usp.br',
@@ -87,8 +50,8 @@
             {
               'client_max_body_size' : '128M',
               'proxy_read_timeout'   : '360',
-              'ssl'                  : True,
-              'letsencrypt'          : True,
+              'ssl'                  : tasks_nginx_ssl,
+              'letsencrypt'          : tasks_nginx_letsencrypt,
               'letsencrypt_email'    : 'fflchsti@usp.br',
               'domains' : [
                 item.split('.')[0] + '.fflch.usp.br',
@@ -101,52 +64,23 @@
             }
         }]
       }}
-  loop: "{{ lookup('url', 'http://aegird8.fflch.usp.br/sites/aegird8.fflch.usp.br/files/fflch_domains.txt', wantlist=True) }}"
+  loop: "{{ lookup('url', tasks_nginx_sites, wantlist=True) }}"
   when:
     - item.split('.')[0] != 'www'
     - item.split('.')[0] != ""
     - item.split('.')[0] | regex_search("^[u]") # Já rodados: a,b,c,d,e,f,g,h,i,j,l,m,n,o,p,r,s,t,u
-    - nginx_aegir_sites
-
-######################## Exceções
-
-- name: Exceções nginx_revproxy_sites extras
-  set_fact:
-    nginx_revproxy_sites_extras:
-      default:
-        ssl: False
-        letsencrypt: False
-
-#      siteum.usp.br:
-#        client_max_body_size: "128M"
-#        proxy_read_timeout: "360"
-#        domains:
-#          - siteum.fflch.usp.br
-#          - www.siteum.fflch.usp.br
-#        upstreams:
-#          - { backend_address: 10.2.0.3, backend_port: 80 }
-#        ssl: "{{ nginx_ssl_env}}"
-#        letsencrypt: "{{ nginx_ssl_env}}"
-#        letsencrypt_email: "fflchsti@usp.br"
-#
-#     # esse só está aqui por causa da porta 8080
-#      sitedois.fflch.usp.br:
-#        domains:
-#          - sitedois.fflch.usp.br
-#          - www.sitedois.fflch.usp.br
-#        upstreams:
-#          - { backend_address: 10.2.0.4, backend_port: 8080 }
-#        ssl: "{{ nginx_ssl_env}}"
-#        letsencrypt: "{{ nginx_ssl_env}}"
-#        letsencrypt_email: "fflchsti@usp.br"
+    - tasks_nginx_aegir_sites
 
 - name: merge nginx_revproxy_sites
   set_fact:
-    nginx_revproxy_sites: "{{ nginx_revproxy_sites|combine(nginx_revproxy_sites_extras) }}"
+    nginx_revproxy_sites: "{{ nginx_revproxy_sites|combine(tasks_nginx_revproxy_sites_extras) }}"
 
 - name: nginxrevproxy
   include_role:
     name: hispanico.nginx_revproxy
+  vars:
+    nginx_revproxy_remove_webroot_sites: false
+    nginx_revproxy_de_activate_sites: false
 
 - name: Copia certificates.sh.j2
   template:

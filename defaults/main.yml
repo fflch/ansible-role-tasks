@@ -73,11 +73,25 @@ tasks_id_rsa_pub: "{{ lookup('file', 'templates/id_rsa.pub.j2') }}"
 
 ###################################
 tasks_nginx_sites: http://aegird8.fflch.usp.br/sites/aegird8.fflch.usp.br/files/fflch_domains.txt
-nginx_ssl_env: False
-nginx_revproxy_remove_webroot_sites: false
-nginx_revproxy_de_activate_sites: false
-nginx_aegir_sites: false
-nginx_domains_from_csv: false
-nginx_domains_temp_from_csv: false
+tasks_nginx_ssl: False
+tasks_nginx_letsencrypt: False
+tasks_nginx_aegir_sites: False
+tasks_nginx_revproxy_sites_extras:
+  default:
+    ssl: False
+    letsencrypt: False
+
+  exemplo.fflch.usp.br:
+    client_max_body_size: "128M"
+    proxy_read_timeout: "360"
+    domains:
+      - exemplo.fflch.usp.br
+      - www.exemplo.fflch.usp.br
+    upstreams:
+      - { backend_address: 192.168.8.92, backend_port: 80 }
+    ssl: True
+    letsencrypt: False
+    letsencrypt_email: "fflchsti@usp.br"
+
 
 
