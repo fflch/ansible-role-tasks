@@ -4,7 +4,6 @@ tasks_php: false
 tasks_zoneminder: false
 tasks_cups: false
 tasks_bind: false
-tasks_sambadc: false
 tasks_django: false
 tasks_nginxrevproxy: false
 tasks_freeradius: false
