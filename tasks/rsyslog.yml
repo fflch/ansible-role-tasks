@@ -1,4 +1,9 @@
-# FALTA INSTALAR mariadb-client
+- name: install packages
+  apt:
+    state: latest
+    update_cache: yes
+    pkg:
+      - mariadb-client
 
 - name: Creates directory
   file:

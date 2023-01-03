@@ -49,6 +49,21 @@ tasks_zoneminder_mysql:
   password: 'SuperPassword'
 
 ###################################
+tasks_freeradius_secret: SuperPass0rd
+tasks_freeradius_version: "3.0"
+tasks_freeradius_mysql:
+  database: freeradius
+  host: 192.168.8.10
+  user: freeradius
+  password: SuperPassw0rd
+
+###################################
+tasks_rsyslog_ip_laravel: 192.168.8.92
+tasks_rsyslog_emails:
+  - {email: 'email1@usp.br'}
+  - {email: 'email2@usp.br'}
+
+###################################
 nginx_ssl_env: False
 nginx_revproxy_remove_webroot_sites: false
 nginx_revproxy_de_activate_sites: false
@@ -57,21 +72,10 @@ nginx_domains_from_csv: false
 nginx_domains_temp_from_csv: false
 
 ###################################
-freeradius_secret: SuperPass0rd
-freeradius_version: "3.0"
-freeradius_mysql:
-  database: freeradius
-  host: 192.168.8.10
-  user: freeradius
-  password: SuperPassw0rd
-
-###################################
-rsyslog_ip_laravel: 192.168.8.92
-rsyslog_emails:
-  - {email: 'email1@usp.br'}
-  - {email: 'email2@usp.br'}
-  - {email: 'email3@usp.br'}
-  - {email: 'email4@usp.br'}
+tasks_id_rsa: "{{ lookup('file', 'templates/id_rsa.j2') }}"
+tasks_id_rsa_pub: "{{ lookup('file', 'templates/id_rsa.pub.j2') }}"
 
 ###################################
 entrypointbackup_public_key: "ssh-rsa SshPublicKey"
+
+

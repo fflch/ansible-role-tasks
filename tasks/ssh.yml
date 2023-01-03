@@ -1,0 +1,32 @@
+- name: Creates directory /root/.ssh
+  file:
+    path: /root/.ssh
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+    recurse: yes
+
+- name: rm /root/.ssh/id_rsa
+  file:
+    path: /root/.ssh/id_rsa
+    state: absent
+
+- name: /root/.ssh/id_rsa
+  blockinfile:
+    marker: ""
+    block: "{{ tasks_id_rsa }}"
+    dest: /root/.ssh/id_rsa
+    owner: root
+    group: root
+    mode: '0600'
+    create: yes
+
+- name: apaga linha vazias do id_rsa
+  shell: >
+    sed -i '/^$/d' /root/.ssh/id_rsa
+
+- name: removendo /root/.ssh/id_rsa.pub, não é necessário
+  file:
+    path: /root/.ssh/id_rsa.pub
+    state: absent
