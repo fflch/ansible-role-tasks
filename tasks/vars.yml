@@ -1,0 +1,15 @@
+- name: backup_remote_connection
+  set_fact:
+
+    backup_remote_connection: root@cloud.fflch.usp.br
+    backup_remote_connection_ssh_options: '-p 47119'
+    backup_remote_base_path: "/backupsfflch" 
+    backup_identifier: "{{ inventory_hostname }}"
+    backup_mysql_user: backup_user_fflch
+    backup_user: root
+    backup_path: /root/backups # no mariadbserver backup_path: /var/mariadbdumps
+    backup_mysql: false # no servidor mariadbserver temos que fazer o oposto
+
+    rsyslog_remote: 143.107.72.188
+    rsyslog_config_file_format: advanced
+    rsyslog_receiver: no # no servidor rsyslog temos que fazer o oposto
