@@ -72,9 +72,11 @@ tasks_id_rsa_pub: "{{ lookup('file', 'templates/id_rsa.pub.j2') }}"
 
 ###################################
 tasks_nginx_sites: http://aegird8.fflch.usp.br/sites/aegird8.fflch.usp.br/files/fflch_domains.txt
+tasks_nginx_domains_from_csv: False
+tasks_nginx_aegir_sites: False
 tasks_nginx_ssl: False
 tasks_nginx_letsencrypt: False
-tasks_nginx_aegir_sites: False
+
 tasks_nginx_revproxy_sites_extras:
   default:
     ssl: False

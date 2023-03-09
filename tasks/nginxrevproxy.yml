@@ -38,7 +38,7 @@
   with_items:
     - "{{ domains }}"
   when:
-    - nginx_domains_from_csv
+    - tasks_nginx_domains_from_csv
 
 ######################## sites em drupal em https
 - name: Sites em Drupal
