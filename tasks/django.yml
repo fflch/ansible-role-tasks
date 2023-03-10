@@ -26,3 +26,8 @@
     python_39: true
     python_310: true
     python_311: false
+    
+- include_role:
+    name: geerlingguy.nodejs
+  vars:
+    nodejs_version: "10.x"
