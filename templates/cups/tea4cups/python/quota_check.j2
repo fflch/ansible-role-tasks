@@ -8,7 +8,9 @@ import subprocess
 import time
 import traceback
 
+# temporário: 
 # Se a impressora não tem regra, imprimimos diretamente
+# para evitar fazer muitas requisições HTTP
 printers2ignorefile = open('/root/printers2ignore.json')
 printers2ignore = json.load(printers2ignorefile)
 printer = os.getenv('TEAPRINTERNAME')
