@@ -36,6 +36,12 @@
     chdir: /opt/pkpgcounter
 
 ##########
+- name: download printers to ignore in quota
+  get_url:
+    url: "{{ tasks_cups_url_ignore_printers }}"
+    dest: /root/printers2ignore.json
+    mode: '0440'
+
 - name: copy quota check - php
   template:
     src: 'cups/tea4cups/php/quota_check.j2'

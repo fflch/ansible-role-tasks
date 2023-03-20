@@ -30,6 +30,7 @@ tasks_cups_admin_networks:
   - '10.180.0.0/19'
   - '192.168.8.0/24'
 tasks_cups_use_php_backend: True
+tasks_cups_url_ignore_printers: "https://quotas.fflch.usp.br/api/printers-without-rules"
 
 tasks_bind_job_server: dev # dev or prod
 tasks_bind_domain: com.br

@@ -8,8 +8,14 @@ import subprocess
 import time
 import traceback
 
-# Registrando model printing 
+# Se a impressora não tem regra, imprimimos diretamente
+printers2ignorefile = open('/root/printers2ignore.json')
+printers2ignore = json.load(printers2ignorefile)
+printer = os.getenv('TEAPRINTERNAME')
+if printer in printers2ignore:
+    exit(0)
 
+# Registrando model printing 
 try:
     url = "{{ tasks_cups_quotas_endpoint }}/api/printings"
     api_key = "{{ tasks_cups_quotas_api_token }}"
@@ -62,7 +68,7 @@ try:
         printing_id = str(data["printing_id"])
 
         for i in range(120):
-            time.sleep(1)
+            time.sleep(3)
             response = requests.get(url + '/' + printing_id, headers=headers)
             latest_status = response.json()["latest_status"]
 
