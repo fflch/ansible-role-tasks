@@ -5,6 +5,15 @@ import os
 import requests
 import traceback
 
+# temporário: 
+# Se a impressora não tem regra, imprimimos diretamente
+# para evitar fazer muitas requisições HTTP
+printers2ignorefile = open('/root/printers2ignore.json')
+printers2ignore = json.load(printers2ignorefile)
+printer = os.getenv('TEAPRINTERNAME')
+if printer in printers2ignore:
+    exit(0)
+
 try:
     url = "{{ tasks_cups_quotas_endpoint }}/api/printings"
     api_key = "{{ tasks_cups_quotas_api_token }}"

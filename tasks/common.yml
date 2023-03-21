@@ -6,7 +6,7 @@
     cache_valid_time: 86400 # One day
     autoremove: yes
 
-- name: Install a list of packages
+- name: Install a list of common packages
   apt:
     pkg:
     - rsync
@@ -15,6 +15,7 @@
     - curl
     - git
     - mariadb-client
+    - python3-pip
 
 - name: Corrige o timezone para America/Sao_Paulo
   include_role:
