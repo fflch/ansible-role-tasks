@@ -2,7 +2,18 @@
 
 today=`date +"%Y/%m/%d"`
 where='/var/syslog/hosts'
-body=$(for ip in `ls $where | grep 10.68`; do grep -ir BPDU $where/$ip/$today; done)
+
+
+body=""
+for ip in `ls $where | grep 10.68`; do
+  if [ -d "$where/$ip/$today" ]; then
+    aux=$(grep -ir BPDU $where/$ip/$today)
+    if [ ! -z "$aux" ]; then
+      body="$body<br>$aux"
+    fi
+  fi
+done
+
 
 # Envio do Email - quando body não estã vazio
 if [ ! -z "$body" ]
