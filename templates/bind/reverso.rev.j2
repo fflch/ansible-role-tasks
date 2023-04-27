@@ -8,3 +8,7 @@ $ORIGIN {{ tasks_bind_ns_ip_reverse }}.in-addr.arpa.
            21600 IN NS   {{ fqdn.ns }}.
            {% endfor %}
            21600 IN NS   {{ tasks_bind_ns_name }}.{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}.
+
+; exemplo 143.107.8.20
+;20  IN  PTR servidor1.fflch.usp.br.
+

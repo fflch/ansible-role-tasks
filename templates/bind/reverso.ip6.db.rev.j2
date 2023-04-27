@@ -1,0 +1,19 @@
+$TTL 21600
+$ORIGIN {{task_bind_rev_ip6}}.ip6.arpa.
+
+@       IN      SOA     {{ tasks_bind_ns_name }}.{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}.  fflchsti.usp.br. (
+                                                2018090647      ; Serial
+                                                10800           ; Refresh [3h]
+                                                3600            ; Retry   [1h]
+                                                1209600         ; Expire  [2w]
+                                                300 )           ; Minimum [24h]
+{% for fqdn in tasks_bind_name_server %}
+@	IN	NS	{{ fqdn.ns }}.
+{% endfor %}
+
+; exemplos
+; 2001:12d0:8070::1
+;1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR servidor1.fflch.usp.br.
+
+; 2001:12d0:8070::2
+;2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR servidor2.fflch.usp.br.

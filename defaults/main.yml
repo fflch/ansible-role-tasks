@@ -38,6 +38,7 @@ tasks_bind_subdomain: example
 tasks_bind_ns_name: nsname
 tasks_bind_ns_ip: 192.168.8.1
 tasks_bind_ns_ip_reverse: 8.168.192
+task_bind_rev_ip6: '0.7.0.8.0.d.2.1.1.0.0.2'
 tasks_bind_address_dns_slave:
   - {address: '192.168.0.1'}
   - {address: '2001:db8:cafe:1111:faca::1'}

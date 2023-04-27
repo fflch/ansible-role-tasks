@@ -41,18 +41,18 @@ controls {
 };
 
 acl slaves {
-         127.0.0.1;
-         ::1;
-    {% for ip in tasks_bind_address_dns_slave %}
-     {{ ip.address }};
-    {% endfor %}
+        127.0.0.1;
+        ::1;
+        {% for ip in tasks_bind_address_dns_slave %}
+                {{ ip.address }};
+        {% endfor %}
 };
 
 masters notifyslaves {
-         127.0.0.1;
-    {% for ip in tasks_bind_address_dns_slave %}
-     {{ ip.address }};
-    {% endfor %}
+        127.0.0.1;
+        {% for ip in tasks_bind_address_dns_slave %}
+                {{ ip.address }};
+        {% endfor %}
 };
 
 logging {

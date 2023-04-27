@@ -58,6 +58,14 @@
     group: bind
     mode: 0644
 
+- name: copy /var/cache/bind/master/reverso.ip6.db.rev
+  template:
+    src: 'bind/reverso.ip6.db.rev.j2'
+    dest: "/var/cache/bind/master/{{task_bind_rev_ip6}}.ip6.db.rev"
+    owner: root
+    group: bind
+    mode: 0644
+
 - name: Create links
   file:
     src: '/var/cache/bind/{{ item }}'

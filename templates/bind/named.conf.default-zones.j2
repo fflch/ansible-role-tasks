@@ -50,6 +50,11 @@ view "internal" {
             inline-signing yes;
             file "/var/cache/bind/master/{{ tasks_bind_subdomain }}.db";
     };
+
+    zone "{{task_bind_rev_ip6}}.ip6.arpa" {
+        type master;
+        file "/var/cache/bind/master/{{task_bind_rev_ip6}}.ip6.db.rev";
+    };
 };
 
 view "externa" {
@@ -68,20 +73,8 @@ view "externa" {
     zone "{{ tasks_bind_ns_ip_reverse }}.in-addr.arpa" {
             in-view internal;
     };
-};
 
-view "version" CHAOS {
-    match-clients { any; };
-    recursion no;
-
-    zone "." {
-            type hint;
-            file "/dev/null";
-    };
-
-    zone "bind" chaos {
-            allow-query { localhost; };
-            type master;
-            file "/etc/bind/bind.db";
+    zone "{{task_bind_rev_ip6}}.ip6.arpa" {
+            in-view internal;
     };
 };
