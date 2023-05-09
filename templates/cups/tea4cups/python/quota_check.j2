@@ -7,8 +7,42 @@ import requests
 import subprocess
 import time
 import traceback
+import mysql.connector as database
+from mysql.connector import Error
 
-# temporário: 
+def set_log(err):
+    log = "Banco de dados error: " + str(err)
+    file_object = open("/tmp/tea4cups.log", "a+")
+    file_object.write("\n" + str(log))
+    file_object.close()
+
+def get_latest_status(connection, printing_id):
+    cursor = connection.cursor()
+    query = "select latest_status from printings where id=%s"
+    try:
+        cursor.execute(query, (printing_id,))
+        result = cursor.fetchone()
+        if result is not None:
+            for status in result:
+                return status
+        return result
+    except Error as err:
+        set_log(err)
+        exit(-1)
+
+try:
+    connection = database.connect(
+        user="{{ tasks_cups_quotas_username }}",
+        password="{{ tasks_cups_quotas_password }}",
+        host="{{ tasks_cups_quotas_host }}",
+        database="{{ tasks_cups_quotas_database }}",
+        autocommit=True
+    )
+except Error as err:
+    set_log(err)
+    exit(-1)
+
+# temporário:
 # Se a impressora não tem regra, imprimimos diretamente
 # para evitar fazer muitas requisições HTTP
 printers2ignorefile = open('/root/printers2ignore.json')
@@ -25,10 +59,10 @@ try:
 
     user = os.getenv('TEAUSERNAME')
     datafile = os.getenv('TEADATAFILE')
-    
+ 
     #pages = subprocess.check_output(['/usr/bin/pkpgcounter', datafile])
     pages = subprocess.check_output(['/usr/local/bin/pkpgcounter', datafile])
-    
+ 
     copies = os.getenv('TEACOPIES')
     printer = os.getenv('TEAPRINTERNAME')
     jobid = os.getenv('TEAJOBID')
@@ -70,9 +104,9 @@ try:
         printing_id = str(data["printing_id"])
 
         for i in range(120):
-            time.sleep(3)
-            response = requests.get(url + '/' + printing_id, headers=headers)
-            latest_status = response.json()["latest_status"]
+            time.sleep(1)
+
+            latest_status = get_latest_status(connection, printing_id)
 
             if latest_status == "sent_to_printer_queue":
                 exit(0)
@@ -94,7 +128,9 @@ try:
         requests.post(url + '/' + printer + '/' +  jobid, headers=headers, data=body)
 
         exit(-1)
-        
+
+    connection.close()
+ 
 except Exception as err:
     log = traceback.format_exc()
     file_object = open("/tmp/tea4cups.log", "a+")

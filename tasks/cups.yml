@@ -23,6 +23,10 @@
 - name: "install pip2 pillow"
   shell: python2 -m pip install pillow
 
+########## instalação da lib para conectar mariadb
+- name: "install mysql-connector-python"
+  command: python3 -m pip install mysql-connector-python
+
 ########## instalação do pkpgcounter
 - name: Checkout pkpgcounter
   subversion:

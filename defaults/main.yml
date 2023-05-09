@@ -19,6 +19,10 @@ tasks_msmtp_emails:
   - 'email2@usp.br'
 
 # variáveis cups
+tasks_cups_quotas_username: 'user'
+tasks_cups_quotas_password: 'password'
+tasks_cups_quotas_host: '192.168.8.10'
+tasks_cups_quotas_database: 'database'
 tasks_cups_root_password: '12345678'
 tasks_cups_quotas_endpoint: 'http://127.0.0.1/x'
 tasks_cups_quotas_api_token: '123'
