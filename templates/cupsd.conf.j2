@@ -32,8 +32,10 @@ MaxClients 10000
 MaxJobs 10000
 
 # Quando o tea4cups retornar falso, não tentar imprimir novamente, apenas cancele
-ErrorPolicy abort-job
-JobRetryLimit 0
+#ErrorPolicy abort-job
+#JobRetryLimit 0
+ErrorPolicy retry-job
+JobRetryLimit 3
 
 # Preservar Jobs por 7 dias
 # Supondo que o job é 187285, ele estará na pasta:
@@ -43,7 +45,8 @@ PreserveJobFiles 604800
 
 # Specifies the maximum time a job may take to print before it is canceled.
 # Se em 2 minutos a impressora não imprimir, o job é cancelado
-MaxJobTime 120
+#MaxJobTime 120
+MaxJobTime 360
 
 # TODO: Run filters at lower priority to avoid starving out smbd/cupsd
 #FilterNice 5
