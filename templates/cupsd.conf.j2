@@ -37,12 +37,12 @@ MaxJobs 10000
 ErrorPolicy retry-job
 JobRetryLimit 3
 
-# Preservar Jobs por 1 dia
+# Preservar Jobs por 12 horas
 # Supondo que o job é 187285, ele estará na pasta:
 # /var/spool/cups/d187285-001
 # find .|xargs file|grep -i pdf
-PreserveJobFiles 86400
-PreserveJobHistory 86400
+PreserveJobFiles 43200
+PreserveJobHistory 43200
 
 # Specifies the maximum time a job may take to print before it is canceled.
 # Se em 2 minutos a impressora não imprimir, o job é cancelado
