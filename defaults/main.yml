@@ -27,6 +27,7 @@ tasks_cups_root_password: '12345678'
 tasks_cups_quotas_endpoint: 'http://127.0.0.1/x'
 tasks_cups_quotas_api_token: '123'
 tasks_cups_printers_csv: '../../files/printers.csv'
+tasks_cups_printers_tea4cups_csv: '../../files/printers_tea4cups.csv'
 tasks_cups_networks_csv: '../../files/networks.csv'
 tasks_cups_listen: "143.107.72.2:631"
 tasks_cups_admin_networks:
