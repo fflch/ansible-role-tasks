@@ -25,7 +25,7 @@
     cups_printer_list: > 
       {{ cups_printer_list + [{ 
         'name': item.split(',')[0], 
-        'uri': 'ipp://'+item.split(',')[1],
+        'uri': 'socket://'+item.split(',')[1],
         'printer_or_class': 'printer',
         'state': 'present',
         'location': item.split(",")[0],
@@ -39,7 +39,7 @@
     cups_printer_list: > 
       {{ cups_printer_list + [{ 
         'name': item.split(',')[0], 
-        'uri': 'tea4cups:ipp://'+item.split(',')[1],
+        'uri': 'tea4cups:socket://'+item.split(',')[1],
         'printer_or_class': 'printer',
         'state': 'present',
         'location': item.split(",")[0],
