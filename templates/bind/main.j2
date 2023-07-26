@@ -14,7 +14,7 @@ if [ $# -ne 1 ]
 then
   echo "Please, run in this way: ./main prod or ./main.sh dev"
   exit 1
-fi 
+fi
 
 createCacheFolder()
 {
@@ -37,7 +37,7 @@ montaSerial()
     id_db=${serial_db: -2}
     today=$(date +%Y%m%d)
 
-    id_db=$((10#$id_db))
+    id_db=$(($id_db))
     if [ $((id_db)) -lt 99 ]
     then
         new_id=$(($id_db+1))
@@ -84,7 +84,7 @@ createDbFile()
         sed -i s/__serial__/$new_serial/g .cache/{{ tasks_bind_subdomain }}.db
 
     # se passar no teste, envia para produção
-        path_named_checkzone='/usr/sbin/named-checkzone' #$(which named-checkzone)
+        path_named_checkzone='/usr/bin/named-checkzone' #$(which named-checkzone)
         testconfig=$( ${path_named_checkzone} {{ tasks_bind_subdomain }}.{{ tasks_bind_domain }} .cache/{{ tasks_bind_subdomain }}.db | grep OK | xargs)
         if [ $testconfig == 'OK' ]
         then

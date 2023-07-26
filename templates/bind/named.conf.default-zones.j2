@@ -46,7 +46,7 @@ view "internal" {
     zone "{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}" {
             type master;
             update-policy local;
-            auto-dnssec maintain;
+            dnssec-policy "default";
             inline-signing yes;
             file "/var/cache/bind/master/{{ tasks_bind_subdomain }}.db";
     };
@@ -62,9 +62,6 @@ view "externa" {
 
     zone-statistics yes;
     recursion no;
-
-    additional-from-auth no;
-    additional-from-cache no;
 
     zone "{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}" {
             in-view internal;

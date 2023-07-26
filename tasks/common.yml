@@ -10,7 +10,7 @@
   ansible.builtin.apt:
     name: python3-pip
     state: absent
-    
+
 - name: Install a list of common packages
   apt:
     pkg:
@@ -67,10 +67,10 @@
     mode: '0700'
     recurse: yes
 
-- name: Install the MySQL-python through pip
-  include_role:
-    name: geerlingguy.pip
-  vars:
-    pip_package: python3-pip
-    pip_install_packages:
-      - pymysql
+#- name: Install the MySQL-python through pip
+#  include_role:
+#    name: geerlingguy.pip
+#  vars:
+#    pip_package: python3-pip
+#    pip_install_packages:
+#      - pymysql
