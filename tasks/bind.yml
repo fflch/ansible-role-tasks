@@ -131,6 +131,6 @@
 - name: roda script dns no cron
   cron:
     name: "build_zone_records"
-    minute: "*/1"
+    minute: "*/10"
     job: "cd /root/build_zone_records && ./main.sh {{ tasks_bind_job_server | default('prod', true) }}"
     user: root
