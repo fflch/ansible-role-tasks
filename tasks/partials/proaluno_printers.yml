@@ -27,7 +27,7 @@
       - name: "financeiro_ppd"
         device: "tea4cups:ipp://10.80.0.7/ipp/printer"
         model: "K7600.ppd"
-
+        
         #### Letras ####
       - name: "proaluno_letras_ppd"
         device: "tea4cups:ipp://10.80.0.31/ipp/printer"
@@ -41,4 +41,19 @@
         #### GH ####
       - name: "proaluno_gh_ppd"
         device: "tea4cups:ipp://10.80.0.32/ipp/printer"
+        model: "K7600.ppd"
+
+        #### Letras webprint ####
+      - name: "proaluno_letras_ipp"
+        device: "ipp://10.80.0.31/ipp/printer"
+        model: "K7600.ppd"
+
+        #### FCS webprint ####
+      - name: "proaluno_fcs_ipp"
+        device: "ipp://10.80.0.41/ipp/printer"
+        model: "K7600.ppd"
+
+        #### GH webprint ####
+      - name: "proaluno_gh_ipp"
+        device: "ipp://10.80.0.32/ipp/printer"
         model: "K7600.ppd"
