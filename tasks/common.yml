@@ -21,10 +21,11 @@
     - git
     - mariadb-client
     - python3-pip
-    - rar
-    - unrar
-    - zip
-    - unzip
+# non-free
+#    - rar
+#    - unrar
+#    - zip
+#    - unzip
 
 - name: Corrige o timezone para America/Sao_Paulo
   include_role:

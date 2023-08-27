@@ -10,11 +10,12 @@
     - K7600.ppd
     - E82660.ppd
 
+#    -m {{ item.model }}
 - name: Install printers com ppd 
   shell: >
     /usr/sbin/lpadmin -p {{ item.name }}
     -v {{ item.device }}
-    -m {{ item.model }}
+    -m everywhere
     -o printer-error-policy=abort-job
     -o printer-is-shared=true
     -o PageSize=A4
