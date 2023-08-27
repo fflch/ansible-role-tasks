@@ -8,9 +8,9 @@
     mode: '0755'
   loop:
     - K7600.ppd
-    - "hp-laserjet_flow_e82660-ps.ppd"
+    - E82660.ppd
 
-- name: Install printer ipp próaluno letras
+- name: Install printers com ppd 
   shell: >
     /usr/sbin/lpadmin -p {{ item.name }}
     -v {{ item.device }}
@@ -27,16 +27,16 @@
     proaluno_printers:
       - name: "adm_hp_pb_e82660_fin_ipp_ppd"
         device: "ipp://10.80.0.7/ipp/printer"
-        model: "hp-laserjet_flow_e82660-ps.ppd"
+        model: "E82660.ppd"
 
       - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.32/ipp/printer"
-        model: "hp-laserjet_flow_e82660-ps.ppd"
+        model: "E82660.ppd"
 
       - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_2"
         device: "ipp://10.80.0.51/ipp/printer"
-        model: "hp-laserjet_flow_e82660-ps.ppd"
+        model: "E82660.ppd"
 
       - name: "let_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.31/ipp/printer"
-        model: "hp-laserjet_flow_e82660-ps.ppd"
+        model: "E82660.ppd"
