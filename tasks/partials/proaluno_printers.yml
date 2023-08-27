@@ -1,13 +1,14 @@
 ---
 #### Impressoras da próaluno
 
-- name: Copy ppds K7600
+- name: Copy ppds to cups server
   template:
     src: "ppds/{{item}}"
     dest: "/usr/share/cups/model/{{item}}"
     mode: '0755'
   loop:
     - K7600.ppd
+    - "hp-laserjet_flow_e82660-ps.ppd"
 
 - name: Install printer ipp próaluno letras
   shell: >
@@ -24,36 +25,18 @@
   loop: "{{ proaluno_printers }}"
   vars:
     proaluno_printers:
-      - name: "financeiro_ppd"
-        device: "tea4cups:ipp://10.80.0.7/ipp/printer"
-        model: "K7600.ppd"
-        
-        #### Letras ####
-      - name: "proaluno_letras_ppd"
-        device: "tea4cups:ipp://10.80.0.31/ipp/printer"
-        model: "K7600.ppd"
+      - name: "adm_hp_pb_e82660_fin_ipp_ppd"
+        device: "ipp://10.80.0.7/ipp/printer"
+        model: "hp-laserjet_flow_e82660-ps.ppd"
 
-        #### FCS ####
-      - name: "proaluno_fcs_ppd"
-        device: "tea4cups:ipp://10.80.0.41/ipp/printer"
-        model: "K7600.ppd"
-
-        #### GH ####
-      - name: "proaluno_gh_ppd"
-        device: "tea4cups:ipp://10.80.0.32/ipp/printer"
-        model: "K7600.ppd"
-
-        #### Letras webprint ####
-      - name: "proaluno_letras_ipp"
-        device: "ipp://10.80.0.31/ipp/printer"
-        model: "K7600.ppd"
-
-        #### FCS webprint ####
-      - name: "proaluno_fcs_ipp"
-        device: "ipp://10.80.0.41/ipp/printer"
-        model: "K7600.ppd"
-
-        #### GH webprint ####
-      - name: "proaluno_gh_ipp"
+      - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.32/ipp/printer"
-        model: "K7600.ppd"
+        model: "hp-laserjet_flow_e82660-ps.ppd"
+
+      - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_2"
+        device: "ipp://10.80.0.51/ipp/printer"
+        model: "hp-laserjet_flow_e82660-ps.ppd"
+
+      - name: "let_hp_pb_e82660_proaluno_ipp_ppd_1"
+        device: "ipp://10.80.0.31/ipp/printer"
+        model: "hp-laserjet_flow_e82660-ps.ppd"
