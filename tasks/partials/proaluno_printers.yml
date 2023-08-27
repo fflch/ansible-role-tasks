@@ -27,16 +27,16 @@
     proaluno_printers:
       - name: "adm_hp_pb_e82660_fin_ipp_ppd"
         device: "ipp://10.80.0.7/ipp/printer"
-        model: "E82660.ppd"
+        model: "/usr/share/cups/model/E82660.ppd"
 
       - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.32/ipp/printer"
-        model: "E82660.ppd"
+        model: "/usr/share/cups/model/E82660.ppd"
 
       - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_2"
         device: "ipp://10.80.0.51/ipp/printer"
-        model: "E82660.ppd"
+        model: "/usr/share/cups/model/E82660.ppd"
 
       - name: "let_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.31/ipp/printer"
-        model: "E82660.ppd"
+        model: "/usr/share/cups/model/E82660.ppd"
