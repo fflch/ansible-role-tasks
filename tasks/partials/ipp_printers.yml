@@ -1,5 +1,5 @@
 ---
-#### Impressoras da próaluno
+#### Impressoras ipp
 
 - name: Copy ppds to cups server
   template:
@@ -11,6 +11,7 @@
     - E82660.ppd
 
 #    -m {{ item.model }}
+#    https://docs.oracle.com/cd/E19082-01/819-7761/gfjet/index.html
 - name: Install printers com ppd 
   shell: >
     /usr/sbin/lpadmin -p {{ item.name }}
@@ -20,24 +21,29 @@
     -o printer-is-shared=true
     -o PageSize=A4
     -o Media=A4
+    -o sides=two-sided-long-edge
+    -o Duplex=DuplexNoTumble
+    -o InputSlot=Auto
     - -E
   args:
     chdir: /usr/share/cups/model
-  loop: "{{ proaluno_printers }}"
+  loop: "{{ ipp_printers }}"
   vars:
-    proaluno_printers:
+    ipp_printers:
       - name: "adm_hp_pb_e82660_fin_ipp_ppd"
         device: "ipp://10.80.0.7/ipp/printer"
-        model: "/usr/share/cups/model/E82660.ppd"
 
       - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.32/ipp/printer"
-        model: "/usr/share/cups/model/E82660.ppd"
 
       - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_2"
         device: "ipp://10.80.0.51/ipp/printer"
-        model: "/usr/share/cups/model/E82660.ppd"
 
       - name: "let_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.31/ipp/printer"
-        model: "/usr/share/cups/model/E82660.ppd"
+
+      - name: "adm_hp_cor_e87660_ccint_ipp_ppd"
+        device: "ipp://10.80.0.10/ipp/printer"
+
+      - name: "fcs_hp_cor_e87660_dcp_ipp_ppd"
+        device: "ipp://10.80.0.27/ipp/printer"
