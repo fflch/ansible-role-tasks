@@ -10,7 +10,6 @@
     - K7600.ppd
     - E82660.ppd
 
-#    -m {{ item.model }}
 #    https://docs.oracle.com/cd/E19082-01/819-7761/gfjet/index.html
 - name: Install printers com ppd 
   shell: >
@@ -23,7 +22,7 @@
     -o Media=A4
     -o sides=two-sided-long-edge
     -o Duplex=DuplexNoTumble
-    -o InputSlot=Auto
+    -o InputSlot=Tray2
     - -E
   args:
     chdir: /usr/share/cups/model
