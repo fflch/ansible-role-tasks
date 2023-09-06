@@ -46,7 +46,7 @@ view "internal" {
     zone "{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}" {
             type master;
             update-policy local;
-            dnssec-policy "default";
+        //    dnssec-policy "default";
             inline-signing yes;
             file "/var/cache/bind/master/{{ tasks_bind_subdomain }}.db";
     };
