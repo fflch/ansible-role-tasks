@@ -11,7 +11,7 @@
     - E82660.ppd
 
 #    https://docs.oracle.com/cd/E19082-01/819-7761/gfjet/index.html
-- name: Install printers com ppd 
+- name: Install printers com ppd
   shell: >
     /usr/sbin/lpadmin -p {{ item.name }}
     -v {{ item.device }}
@@ -46,3 +46,9 @@
 
       - name: "fcs_hp_cor_e87660_dcp_ipp_ppd"
         device: "ipp://10.80.0.27/ipp/printer"
+
+      - name: "fcs_hp_pb_e82660_proaluno_ipp_ppd_1"
+        device: "ipp://10.80.0.41/ipp/printer"
+
+      - name: "fcs_hp_pb_e82660_proaluno_ipp_ppd_2"
+        device: "ipp://10.80.0.53/ipp/printer"
