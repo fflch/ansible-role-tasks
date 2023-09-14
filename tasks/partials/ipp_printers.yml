@@ -41,6 +41,9 @@
       - name: "let_hp_pb_e82660_proaluno_ipp_ppd_1"
         device: "ipp://10.80.0.31/ipp/printer"
 
+      - name: "let_hp_pb_e82660_proaluno_ipp_ppd_2"
+        device: "ipp://10.80.0.54/ipp/printer"
+
       - name: "adm_hp_cor_e87660_ccint_ipp_ppd"
         device: "ipp://10.80.0.10/ipp/printer"
 
