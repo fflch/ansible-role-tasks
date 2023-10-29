@@ -34,5 +34,9 @@
     -o Duplex=DuplexNoTumble
     -o InputSlot=Tray2
     - -E
+#  with_items:
+#    - "{{ printers }}"
   with_items:
-    - "{{ printers }}"
+    - "adm_hp_cor_e87660_ccint,10.80.0.10"
+    - "gh_hp_pb_e82660_proaluno1,10.80.0.32"
+    - "gh_hp_pb_e82660_proaluno2,10.80.0.51"
