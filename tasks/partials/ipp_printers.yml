@@ -10,12 +10,23 @@
     - K7600.ppd
     - E82660.ppd
 
-#    https://docs.oracle.com/cd/E19082-01/819-7761/gfjet/index.html
+# read csv printers
+- name: read printers from csv file
+  set_fact:
+    printersfile: "{{ lookup('file', tasks_cups_printers_csv) }}"
+
+- name: csv to list
+  set_fact:
+    printers: "{{ printersfile.split('\n') }}"
+
+# https://docs.oracle.com/cd/E19082-01/819-7761/gfjet/index.html
+# -m everywhere OU
+# -P /usr/share/cups/model/E82660.ppd
 - name: Install printers com ppd
   shell: >
-    /usr/sbin/lpadmin -p {{ item.name }}
-    -v {{ item.device }}
+    /usr/sbin/lpadmin -p {{ item.split(',')[0] }}_ipp_ppd
     -m everywhere
+    -P /usr/share/cups/model/E82660.ppd
     -o printer-error-policy=abort-job
     -o printer-is-shared=true
     -o PageSize=A4
@@ -24,34 +35,5 @@
     -o Duplex=DuplexNoTumble
     -o InputSlot=Tray2
     - -E
-  args:
-    chdir: /usr/share/cups/model
-  loop: "{{ ipp_printers }}"
-  vars:
-    ipp_printers:
-      - name: "adm_hp_pb_e82660_fin_ipp_ppd"
-        device: "ipp://10.80.0.7/ipp/printer"
-
-      - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_1"
-        device: "ipp://10.80.0.32/ipp/printer"
-
-      - name: "gh_hp_pb_e82660_proaluno_ipp_ppd_2"
-        device: "ipp://10.80.0.51/ipp/printer"
-
-      - name: "let_hp_pb_e82660_proaluno_ipp_ppd_1"
-        device: "ipp://10.80.0.31/ipp/printer"
-
-      - name: "let_hp_pb_e82660_proaluno_ipp_ppd_2"
-        device: "ipp://10.80.0.54/ipp/printer"
-
-      - name: "adm_hp_cor_e87660_ccint_ipp_ppd"
-        device: "ipp://10.80.0.10/ipp/printer"
-
-      - name: "fcs_hp_cor_e87660_dcp_ipp_ppd"
-        device: "ipp://10.80.0.27/ipp/printer"
-
-      - name: "fcs_hp_pb_e82660_proaluno_ipp_ppd_1"
-        device: "ipp://10.80.0.41/ipp/printer"
-
-      - name: "fcs_hp_pb_e82660_proaluno_ipp_ppd_2"
-        device: "ipp://10.80.0.53/ipp/printer"
+  with_items:
+    - "{{ printers }}"
