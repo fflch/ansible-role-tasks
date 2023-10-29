@@ -26,7 +26,6 @@
   shell: >
     /usr/sbin/lpadmin -p {{ item.split(',')[0] }}_ipp_ppd
     -m everywhere
-    -P /usr/share/cups/model/E82660.ppd
     -o printer-error-policy=abort-job
     -o printer-is-shared=true
     -o PageSize=A4
