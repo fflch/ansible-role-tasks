@@ -1,14 +1,30 @@
 ---
-#### Impressoras ipp
 
+## Os arquivos PPDs foram baixados de
+## https://sourceforge.net/projects/hplip/files/hplip/3.23.12
+## Descompactar: hplip-3.23.12.tar.gz
+## baixados em 02/dez/2023
+
+## Mapeamento dos arquivos que foram renomeados:
+# e87660.ppd.gz: prnt/ps/hp-laserjet_mfp_e87640-50-60-ps.ppd.gz
+# e82660.ppd.gz: prnt/ps/hp-laserjet_flow_e82660-ps.ppd.gz
+# e52645.ppd.gz: prnt/ps/hp-laserjet_flow_mfp_e52645-ps.ppd.gz
+# e57540.ppd.gz: prnt/ps/hp-color_laserjet_flow_e57540-ps.ppd.gz
+
+###### Observação: 
+### Para o modelo e87660.ppd testar: ./prnt/ps/hp-color_laserjet_flow_e87760-ps.ppd.gz
+
+#### Impressoras ipp
 - name: Copy ppds to cups server
-  template:
+  copy:
     src: "ppds/{{item}}"
     dest: "/usr/share/cups/model/{{item}}"
     mode: '0755'
   loop:
-    - K7600.ppd
-    - E82660.ppd
+    - 'e87660.ppd.gz'
+    - 'e82660.ppd.gz'
+    - 'e52645.ppd.gz'
+    - 'e57540.ppd.gz'
 
 # read csv printers
 - name: read printers from csv file
@@ -20,13 +36,16 @@
     printers: "{{ printersfile.split('\n') }}"
 
 # https://docs.oracle.com/cd/E19082-01/819-7761/gfjet/index.html
-# -m everywhere OU
-# -P /usr/share/cups/model/E82660.ppd
+## Poderíamos usar everywhere, no entato todas impressoras 
+## devem estar ligadas para funcionar
+#### -m everywhere OU -P /usr/share/cups/model/e82660.ppd NÃO ambos
+
 - name: Install printers com ppd
   shell: >
-    /usr/sbin/lpadmin -p {{ item.split(',')[0] }}_ipp_ppd
+    /usr/sbin/lpadmin 
+    -p {{ item.split(',')[0] }}_ipp_ppd
     -v ipp://{{ item.split(',')[1]}}/ipp/printer
-    -m everywhere
+    -P /usr/share/cups/{{ item.split(',')[2]}}.ppd.gz
     -o printer-error-policy=abort-job
     -o printer-is-shared=true
     -o PageSize=A4
@@ -38,6 +57,6 @@
   with_items:
     - "{{ printers }}"
 #  with_items:
-#    - "adm_hp_cor_e87660_ccint,10.80.0.10"
-#    - "gh_hp_pb_e82660_proaluno1,10.80.0.32"
-#    - "gh_hp_pb_e82660_proaluno2,10.80.0.51"
+#    - "adm_hp_cor_e87660_ccint,10.80.0.10,e87660"
+#    - "gh_hp_pb_e82660_proaluno1,10.80.0.32,e82660"
+#    - "gh_hp_pb_e82660_proaluno2,10.80.0.51,e82660"
