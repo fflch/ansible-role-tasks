@@ -40,17 +40,13 @@
     src: cups/override.conf
     dest: /etc/systemd/system/org.cups.cupsd.socket.d/override.conf
 
-# Essa task não funciona - Arrumar
-#- name: change root password
-#  user:
-#    name: root
-#    update_password: always
-#    password: " {{ tasks_cups_root_password | password_hash('sha512') }}"
+- name: change root password
+  user:
+    name: root
+    update_password: always
+    password: "{{ tasks_cups_root_password }}"
 
 - name: Restart service
   service:
     name: cups
     state: restarted
-
-
-

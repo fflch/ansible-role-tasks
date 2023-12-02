@@ -23,7 +23,11 @@ tasks_cups_quotas_username: 'user'
 tasks_cups_quotas_password: 'password'
 tasks_cups_quotas_host: '192.168.8.10'
 tasks_cups_quotas_database: 'database'
-tasks_cups_root_password: '12345678'
+
+# Para criar o HASH da senha, nesse caso, senha123:
+# python -c "from passlib.hash import sha512_crypt; print(sha512_crypt.using(rounds=5000).hash('senha123'))"
+tasks_cups_root_password: '$6$eUm4FGHqjBRwBN/x$fu42kkMMB6zR3hHt00bbr1KwuMSjA1XspFGrrVJ38LRYSh/8j7m14/UfDUYHrsLD9.eIGRaNVk50ZGKBECWKe.'
+
 tasks_cups_quotas_endpoint: 'http://127.0.0.1/x'
 tasks_cups_quotas_api_token: '123'
 tasks_cups_printers_csv: '../../files/printers.csv'

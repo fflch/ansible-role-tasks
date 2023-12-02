@@ -12,7 +12,7 @@
 # e57540.ppd.gz: prnt/ps/hp-color_laserjet_flow_e57540-ps.ppd.gz
 
 ###### Observação: 
-### Para o modelo e87660.ppd testar: ./prnt/ps/hp-color_laserjet_flow_e87760-ps.ppd.gz
+### Para o modelo e87660.ppd.gz testar: ./prnt/ps/hp-color_laserjet_flow_e87760-ps.ppd.gz
 
 #### Impressoras ipp
 - name: Copy ppds to cups server
