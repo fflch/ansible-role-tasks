@@ -45,7 +45,7 @@
     /usr/sbin/lpadmin 
     -p {{ item.split(',')[0] }}_ipp_ppd
     -v ipp://{{ item.split(',')[1]}}/ipp/printer
-    -P /usr/share/cups/{{ item.split(',')[2]}}.ppd.gz
+    -P /usr/share/cups/model/{{ item.split(',')[2]}}.ppd.gz
     -o printer-error-policy=abort-job
     -o printer-is-shared=true
     -o PageSize=A4
