@@ -11,6 +11,8 @@ tasks_rsyslog: false
 tasks_entrypointbackup: false
 tasks_ftp: false
 
+# php
+tasks_php_version: '7.4'
 # msmtp
 tasks_msmtp_email: 'testes.sti.fflch@usp.br'
 tasks_msmtp_password: '123'
