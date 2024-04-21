@@ -2,13 +2,13 @@
   include_role:
     name: geerlingguy.php-versions
   vars:
-    php_version: "7.4"
+    php_version: "{{tasks_php_version}}"
 
 - name: Instala PHP
   include_role:
     name: geerlingguy.php
   vars:
-    php_default_version_debian: '7.4'
+    php_default_version_debian: "{{tasks_php_version}}"
     php_version: "{{php_default_version_debian}}"
     php_packages_extra:
       - memcached
