@@ -34,3 +34,6 @@
 
 - include: ftp.yml
   when: tasks_ftp
+
+- include: dhcp.yml
+  when: tasks_dhcp

@@ -1,0 +1,38 @@
+- name: Install isc-dhcp-server
+  apt:
+    name: isc-dhcp-server
+    state: latest
+    update_cache: yes
+
+- name: config interface
+  lineinfile:
+    path: /etc/default/isc-dhcp-server
+    regexp: '^INTERFACES'
+    line: 'INTERFACES="{{ tasks_dhcp_interfaces }}"'
+
+- name: copy dhcp_consumer.sh
+  template:
+    src: templates/dhcp_consumer.j2
+    dest: /root/dhcp_consumer.sh
+    mode: 0700
+  when: tasks_dhcp_consumer
+
+- name: roda script no cron
+  cron:
+    name: "dhcp consumer"
+    job: "/root/dhcp_consumer.sh"
+  when: tasks_dhcp_consumer
+
+- name: copy dhcp_clean_leases.sh
+  template:
+    src: templates/dhcp_clean_leases.j2
+    dest: /root/dhcp_clean_leases.sh
+    mode: 0700
+
+- name: roda script leases
+  cron:
+    name: "dhcp leases"
+    minute: "0"
+    hour: "2"
+    job: "/root/dhcp_clean_leases.sh"
+

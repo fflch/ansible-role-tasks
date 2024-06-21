@@ -1,0 +1,18 @@
+#!/bin/bash
+curl -k -s -d "consumer_deploy_key={{ tasks_dhcp_deploy_key }}" -X POST {{ tasks_dhcp_copaco }} > /tmp/dhcpd.conf
+
+current=$(cat /etc/dhcp/dhcpd.conf | head -1 )
+new=$(cat /tmp/dhcpd.conf| head -1 )
+check=$(cat /tmp/dhcpd.conf| sed -n 2p)
+
+if [ "$current" != "$new" ]
+then
+    if [ "$check" == "# build success" ]
+    then
+        cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bkp
+        cp /tmp/dhcpd.conf /etc/dhcp/dhcpd.conf
+        rm /tmp/dhcpd.conf
+        systemctl restart isc-dhcp-server
+    fi
+fi
+

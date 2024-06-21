@@ -1,0 +1,5 @@
+#!/bin/bash
+
+systemctl stop isc-dhcp-server
+rm /var/lib/dhcp/dhcpd.leases
+systemctl start isc-dhcp-server
