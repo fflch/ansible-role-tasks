@@ -46,6 +46,21 @@
     update_password: always
     password: "{{ tasks_cups_root_password }}"
 
+- name: copy unpause_printers
+  template:
+    src: cups/unpause_printers.sh.j2
+    dest: "/root/unpause_printers.sh"
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Run unpause_printers
+  cron:
+    name: "Unpause Printers"
+    minute: "*/5"
+    hour: "0"
+    job: "/root/unpause_printers.sh"
+
 - name: Restart service
   service:
     name: cups
