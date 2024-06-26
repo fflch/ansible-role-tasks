@@ -10,6 +10,7 @@ tasks_freeradius: false
 tasks_rsyslog: false
 tasks_entrypointbackup: false
 tasks_ftp: false
+tasks_dhcp: false
 
 # php
 tasks_php_version: '8.2'
