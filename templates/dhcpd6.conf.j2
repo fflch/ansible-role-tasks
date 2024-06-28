@@ -1,0 +1,21 @@
+#jinja2:lstrip_blocks: True
+default-lease-time 360;
+log-facility local7;
+authoritative;
+option dhcp6.name-servers {{ tasks_dhcp6_name_servers }};
+
+{% for item in redes_ipv6.split("\n") %}
+{% if loop.index != 1 %}
+{% set list = item.split(",") %}
+# {{ list[0]|trim() }}
+subnet6 {{ list[1]|trim() }} {
+  {% if list[2] != 'default' %}
+  option dhcp6.name-servers {{ list[2]|trim()|replace('-', ',') }};
+  {% endif %}
+  {% if list[3] != 'not_range' %}
+  range6 {{ list[3]|trim()|replace('-', ' ') }};
+  {% endif %}
+}
+{% endif %}
+
+{% endfor %}

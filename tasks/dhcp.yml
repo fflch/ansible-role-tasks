@@ -1,3 +1,7 @@
+- name: read network ipv6 from file csv
+  set_fact:
+    redes_ipv6: "{{ lookup('file', '../../../files/redes_ipv6.csv') }}"
+
 - name: Install isc-dhcp-server
   apt:
     name: isc-dhcp-server
@@ -36,3 +40,24 @@
     hour: "2"
     job: "/root/dhcp_clean_leases.sh"
 
+- name: copy dhcp6.conf.j2
+  template:
+    src: templates/dhcpd6.conf.j2
+    dest: /etc/dhcp/dhcpd6.conf
+    mode: 0644
+
+- name: create IPv6 lease file
+  file:
+    path: /var/lib/dhcp/dhcpd6.leases
+    state: touch
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: distribution
+  debug: msg={{ ansible_distribution }}
+
+- name: restart dhcpd
+  service:
+    name: isc-dhcp-server
+    state: restarted

@@ -10,6 +10,7 @@ tasks_freeradius: false
 tasks_rsyslog: false
 tasks_entrypointbackup: false
 tasks_ftp: false
+tasks_dhcp: false
 
 # php
 tasks_php_version: '8.2'
@@ -105,8 +106,14 @@ tasks_nginx_revproxy_sites_extras:
     ssl: True
     letsencrypt: False
     letsencrypt_email: "fflchsti@usp.br"
-  
+
 # ftp
 tasks_ftpuser_password: 123
 
+# dhcp
+tasks_dhcp_consumer: false
+tasks_dhcp_deploy_key: "key_to_deploy"
+tasks_dhcp_copaco: "http://copaco.local.usp.br/api/dhcpd.conf"
+tasks_dhcp_interfaces: eth1
+tasks_dhcp6_name_servers: 2001:0DB8:CAFE:DAD0::DEAD
 
