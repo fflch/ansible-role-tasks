@@ -1,10 +1,10 @@
 #!/bin/bash
 
-lpstat -p | cut -d" " -f2,3 > /tmp/impressoras.csv
+lpstat -p | cut -d" " -f2,3 | grep _hp_ > /tmp/impressoras.csv
 arquivo_csv="/tmp/impressoras.csv"
 
 while IFS=" " read -r impressora status; do
-  if [[ "$status" != "está" && "$impressora" != "	Paused" ]]; then
+  if [ "$status" != "está" ]; then
     lpadmin -p "$impressora" -E
   fi
 done < "$arquivo_csv"
