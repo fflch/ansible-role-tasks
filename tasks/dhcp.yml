@@ -11,8 +11,11 @@
 - name: config interface
   lineinfile:
     path: /etc/default/isc-dhcp-server
-    regexp: '^INTERFACES'
-    line: 'INTERFACES="{{ tasks_dhcp_interfaces }}"'
+    regexp: "{{ item.From }}"
+    line: "{{ item.To }}"
+  with_items:
+    - { From: '^INTERFACESv4', To: 'INTERFACESv4="{{ tasks_dhcp_interfaces }}"' }
+    - { From: '^INTERFACESv6', To: 'INTERFACESv6="{{ tasks_dhcp_interfaces }}"' }
 
 - name: copy dhcp_consumer.sh
   template:
@@ -46,6 +49,16 @@
     dest: /etc/dhcp/dhcpd6.conf
     mode: 0644
 
+- name: add rede ipv4 in dhcp.conf
+  blockinfile:
+    path: /etc/dhcp/dhcpd.conf
+    insertafter: "^# DHCP"
+    block: |
+      subnet 192.168.8.0 netmask 255.255.255.0 {
+        range 192.168.8.10 192.168.8.200;
+      }
+  when: not tasks_dhcp_consumer
+
 - name: create IPv6 lease file
   file:
     path: /var/lib/dhcp/dhcpd6.leases
@@ -53,9 +66,6 @@
     owner: root
     group: root
     mode: '0644'
-
-- name: distribution
-  debug: msg={{ ansible_distribution }}
 
 - name: restart dhcpd
   service:
