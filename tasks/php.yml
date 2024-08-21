@@ -97,8 +97,3 @@
     regexp: 'memory_limit'
     line: 'memory_limit = -1'
     backrefs: yes
-
-- include_role:
-    name: geerlingguy.nodejs
-  vars:
-    nodejs_version: "10.x"
