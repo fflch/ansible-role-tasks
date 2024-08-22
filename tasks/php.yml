@@ -64,9 +64,9 @@
     composer_keep_updated: False
     composer_version_branch: '--2'
 
-- name: Update repositories cache and install "libapache2-mod-php7.4" package
+- name: Update repositories cache and install "libapache2-mod-php" package
   apt:
-    name: "libapache2-mod-php7.4"
+    name: "libapache2-mod-php{{tasks_php_version}}"
     update_cache: yes
 
 - name: install ldap-utils
