@@ -37,7 +37,7 @@ montaSerial()
     id_db=${serial_db: -2}
     today=$(date +%Y%m%d)
 
-    id_db=$(($id_db))
+    id_db=$((${id_db#0}))
     if [ $((id_db)) -lt 99 ]
     then
         new_id=$(($id_db+1))
