@@ -27,7 +27,6 @@
     python_310: true
     python_311: true
     python_312: true
-    python_313: true
     
 - include_role:
     name: geerlingguy.nodejs
