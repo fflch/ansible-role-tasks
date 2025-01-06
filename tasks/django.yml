@@ -23,7 +23,7 @@
   vars:
     python_27: false
     python_36: false
-    python_39: true
+    python_39: false
     python_310: true
     python_311: true
     python_312: true
