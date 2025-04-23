@@ -1,6 +1,6 @@
-- include: common.yml
-- include: ssh.yml
-- include: vars.yml
+#- include: common.yml
+#- include: ssh.yml
+#- include: vars.yml
 
 - include: cups.yml
   when: tasks_cups
@@ -37,3 +37,6 @@
 
 - include: dhcp.yml
   when: tasks_dhcp
+
+- include: drupal.yml
+  when: tasks_drupal

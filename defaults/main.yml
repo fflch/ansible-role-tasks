@@ -11,6 +11,7 @@ tasks_rsyslog: false
 tasks_entrypointbackup: false
 tasks_ftp: false
 tasks_dhcp: false
+tasks_drupal: false
 
 # php
 tasks_php_version: '8.2'
@@ -116,4 +117,15 @@ tasks_dhcp_deploy_key: "key_to_deploy"
 tasks_dhcp_copaco: "http://copaco.local.usp.br/api/dhcpd.conf"
 tasks_dhcp_interfaces: eth1
 tasks_dhcp6_name_servers: 2001:0DB8:CAFE:DAD0::DEAD
+
+# drupal
+
+tasks_drupal_repo: 'https://github.com/fflch/drupal.git'
+tasks_drupal_dest: '/var/www/drupal'
+tasks_drupal_repo_version: 'v8.9.16a'
+tasks_drupal_sites:
+  - site1.local.fflch.usp.br
+  - site2.local.fflch.usp.br
+  - site3.local.fflch.usp.br
+  - site4.local.fflch.usp.br
 

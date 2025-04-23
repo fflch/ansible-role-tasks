@@ -1,0 +1,63 @@
+# git clone do drupal
+
+- name: Gitconfig list
+  command: git config --list
+  register: gitconfig
+
+- name: Pesquisa e atribui o valor do domínio
+  set_fact:
+    domain: "{{ gitconfig.stdout_lines | regex_search(tasks_drupal_dest) }}"
+
+- name: Adiciona o domínio como safe.directory no gitconfig
+  command: git config --global --add safe.directory "{{ tasks_drupal_dest }}"
+  when: not domain
+
+- name: clone repo
+  git:
+    repo: "{{ tasks_drupal_repo }}"
+    dest: "{{ tasks_drupal_dest }}"
+    version: "{{ tasks_drupal_repo_version }}"
+    force: yes
+    update: yes
+
+- name: composer install
+  composer:
+    command: install
+    working_dir: "{{ tasks_drupal_dest }}"
+  environment:
+    COMPOSER_NO_INTERACTION: "1"
+    COMPOSER_ALLOW_SUPERUSER: "1"
+
+- name: virtualhost.conf
+  template:
+    src: templates/virtualhost.conf
+    dest: "/etc/apache2/sites-available/{{ item }}.conf"
+  loop: "{{ tasks_drupal_sites }}"
+
+- name: active virtualhost
+  shell: a2ensite "{{ item }}"
+  args:
+    creates: "/etc/apache2/sites-enabled/{{ item }}.conf"
+  loop: "{{ tasks_drupal_sites }}"
+
+- name: site-install
+  command: >-
+    {{ tasks_drupal_dest }}/vendor/bin/drush site-install fflchprofile \
+            --sites-subdir={{ item }} \
+            --db-url=mysql://admin:admin@10.64.0.10/{{ item.split('.')[0] }} \
+            --site-name="admin" \
+            --account-name="admin" \
+            --account-pass="admin" --yes
+  args:
+      chdir: "{{ tasks_drupal_dest }}"
+  loop: "{{ tasks_drupal_sites }}"
+
+# 0 ) subir i site da sti na VM
+
+# 1) fazer a task (loop) para colocar a linha: $settings['file_private_path']='/private/site1.local.fflch.usp.br'
+
+# 2) não rodar site-install para os itens que já existem na pasta {{ tasks_drupal_dest }}/web/sites/XXXX
+
+# 3) fazer a task drush updb e up entity
+
+# 4) reload do apache usando notify (olhar ansible-laravel)
