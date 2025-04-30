@@ -1,6 +1,6 @@
 # git clone do drupal
 
-- name: Gitconfig list
+- name: Lista o Gitconfig
   command: git config --list
   register: gitconfig
 
@@ -12,7 +12,7 @@
   command: git config --global --add safe.directory "{{ tasks_drupal_dest }}"
   when: not domain
 
-- name: clone repo
+- name: Clona o repositório do Drupal no github
   git:
     repo: "{{ tasks_drupal_repo }}"
     dest: "{{ tasks_drupal_dest }}"
@@ -20,7 +20,7 @@
     force: yes
     update: yes
 
-- name: composer install
+- name: Executa o Composer Install
   composer:
     command: install
     working_dir: "{{ tasks_drupal_dest }}"
@@ -28,36 +28,86 @@
     COMPOSER_NO_INTERACTION: "1"
     COMPOSER_ALLOW_SUPERUSER: "1"
 
-- name: virtualhost.conf
+- name: Configura o Virtualhost
   template:
     src: templates/virtualhost.conf
     dest: "/etc/apache2/sites-available/{{ item }}.conf"
   loop: "{{ tasks_drupal_sites }}"
 
-- name: active virtualhost
+- name: Ativa o Virtualhost
   shell: a2ensite "{{ item }}"
   args:
     creates: "/etc/apache2/sites-enabled/{{ item }}.conf"
   loop: "{{ tasks_drupal_sites }}"
 
-- name: site-install
+- name: Instala os sites
   command: >-
     {{ tasks_drupal_dest }}/vendor/bin/drush site-install fflchprofile \
             --sites-subdir={{ item }} \
-            --db-url=mysql://admin:admin@10.64.0.10/{{ item.split('.')[0] }} \
-            --site-name="admin" \
+            --db-url=mysql://aegir_root:SuperPassw0rd@192.168.8.10/{{ item.split('.')[0] }} \
+            --site-name={{ item.split('.')[0] }} \
             --account-name="admin" \
             --account-pass="admin" --yes
   args:
       chdir: "{{ tasks_drupal_dest }}"
   loop: "{{ tasks_drupal_sites }}"
 
-# 0 ) subir i site da sti na VM
+# 0 ) Subir 4 sites na VM
 
-# 1) fazer a task (loop) para colocar a linha: $settings['file_private_path']='/private/site1.local.fflch.usp.br'
+- name: Copia os arquivos de trabalho
+  shell: "scp -r -P 4321 acesarfs@10.64.0.38:/home/acesarfs/projetos/pb_drupal /home/vagrant/"
 
-# 2) não rodar site-install para os itens que já existem na pasta {{ tasks_drupal_dest }}/web/sites/XXXX
+- name: Extrai arquivos FILES compactados
+  shell: "tar -xvzf /home/vagrant/pb_drupal/{{ item.split('.')[0] }}_files.tar.gz"
+  args:
+      chdir: "/home/vagrant/pb_drupal/"
+  loop: "{{ tasks_drupal_sites }}"
 
-# 3) fazer a task drush updb e up entity
+- name: Extrai arquivos PRIVATE compactados
+  shell: "tar -xvzf /home/vagrant/pb_drupal/{{ item.split('.')[0] }}_private.tar.gz"
+  args:
+      chdir: "/home/vagrant/pb_drupal/"
+  loop: "{{ tasks_drupal_sites }}"
+
+- name: Executa o dump no banco de dados do site
+  shell: "mariadb -uaegir_root -pSuperPassw0rd -h192.168.8.10 {{ item.split('.')[0] }} < /home/vagrant/pb_drupal/{{ item.split('.')[0] }}_dump.sql"
+  loop: "{{ tasks_drupal_sites }}"
+
+- name: Copia a pasta FILES
+  shell: "cp -ar /home/vagrant/pb_drupal/var/aegir/platforms/drupal8916a/web/sites/{{ item.split('.')[0] }}.fflch.usp.br/files/ {{ tasks_drupal_dest }}/web/sites/{{ item }}/"
+  loop: "{{ tasks_drupal_sites }}"
+
+- name: Copia a pasta PRIVATE
+  shell: "cp -ar /home/vagrant/pb_drupal/var/aegir/platforms/drupal8916a/web/sites/{{ item.split('.')[0] }}.fflch.usp.br/private/ {{ tasks_drupal_dest }}/web/sites/{{ item }}/"
+  loop: "{{ tasks_drupal_sites }}"
+
+# 1) Fazer a task (loop) para colocar a linha: $settings['file_private_path']='/private/site1.local.fflch.usp.br'
+
+- name: Insere linha no arquivo settings.php 
+  lineinfile:
+    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
+    line: "$settings['file_private_path']='/private/{{ item }}';"
+  loop: "{{ tasks_drupal_sites }}"
+
+# 2) Não rodar site-install para os itens que já existem na pasta {{ tasks_drupal_dest }}/web/sites/XXXX
+# R: O que vai demandar a execução não é a lista de sites?
+
+# 3) Fazer a task drush updb e up entity
+
+- name: Atualiza os bancos de dados dos sites
+  command: >-
+    {{ tasks_drupal_dest }}/vendor/bin/drush updb {{ item }} -y
+  args:
+      chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
+  loop: "{{ tasks_drupal_sites }}"
+
+- name: Atualiza as entidades dos sites
+  command: >-
+    {{ tasks_drupal_dest }}/vendor/bin/drush entup {{ item }} -y
+  args:
+      chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
+  loop: "{{ tasks_drupal_sites }}"
 
 # 4) reload do apache usando notify (olhar ansible-laravel)
+
+# R: Não precisou
