@@ -44,7 +44,7 @@
   command: >-
     {{ tasks_drupal_dest }}/vendor/bin/drush site-install fflchprofile \
             --sites-subdir={{ item }} \
-            --db-url=mysql://aegir_root:SuperPassw0rd@192.168.8.10/{{ item.split('.')[0] }} \
+            --db-url=mysql://{{ item.split('.')[0] }}:{{ lookup('passwordstore', 'sti/servidores/mysql/'+item.split('.')[0]) }}@{{ tasks_drupal_database }}/{{ item.split('.')[0] }} \
             --site-name={{ item.split('.')[0] }} \
             --account-name="admin" \
             --account-pass="admin" --yes

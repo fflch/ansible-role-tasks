@@ -1,0 +1,6 @@
+-- criar as senhas:
+
+-- pass generate -n fflch/sti/servidores/mysql/XXX
+
+-- Criar os databases a partir de um csv, exemplo está no playbook mariadbmaster no provisioner
+
