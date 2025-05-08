@@ -50,7 +50,9 @@
             --account-pass="admin" --yes
   args:
       chdir: "{{ tasks_drupal_dest }}"
+      creates: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
   loop: "{{ tasks_drupal_sites }}"
+
 
 # 0 ) Subir 4 sites na VM
 
