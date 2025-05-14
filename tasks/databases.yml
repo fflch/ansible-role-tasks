@@ -1,6 +1,43 @@
--- criar as senhas:
+# Inicialmente, vamos criar as senhas no chaveiro
+- name: lê o arquivo csv
+  set_fact:
+    databases_file: "{{ lookup('file', tasks_databases_sites_file) }}"
 
--- pass generate -n fflch/sti/servidores/mysql/XXX
+- name: csv to list
+  set_fact:
+    databases: "{{ databases_file.split('\n') }}"
 
--- Criar os databases a partir de um csv, exemplo está no playbook mariadbmaster no provisioner
+- name: Cria senhas no chaveiros para os bancos que não tem senha
+  shell: |
+    bash -c 'pass show sti/servidores/mysql/{{ item }} &>/dev/null || pass generate -n sti/servidores/mysql/{{ item }}'
+  become: false
+  delegate_to: localhost
+  loop: "{{ databases }}"
+
+# Criar os databases a partir de um csv, exemplo está no playbook mariadbmaster no provisioner
+
+### build mysql_users
+- name: Initialize an empty list for mysql_users
+  set_fact:
+    mysql_users: []
+
+- name: build mysql_databases
+  set_fact:
+    mysql_users: >
+      {{ mysql_users +
+        [{
+          'name'    : item,
+          'host'    : '%',
+          'priv'    : item + '.*:ALL',
+          'password': lookup('passwordstore', 'sti/servidores/mysql/' + item )
+        }]
+      }}
+  loop: "{{ databases }}"
+
+# falta fazer 
+
+#mysql_databases: []
+#   - name: example
+#     collation: utf8_general_ci
+#     encoding: utf8
 

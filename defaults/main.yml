@@ -12,6 +12,7 @@ tasks_entrypointbackup: false
 tasks_ftp: false
 tasks_dhcp: false
 tasks_drupal: false
+tasks_databases: false
 
 # php
 tasks_php_version: '8.2'
@@ -52,7 +53,8 @@ tasks_bind_ns_ip: 192.168.8.1
 tasks_bind_ns_ip_reverse: 8.168.192
 task_bind_rev_ip6: '0.7.0.8.0.d.2.1.1.0.0.2'
 tasks_bind_address_dns_slave:
-  - {address: '192.168.0.1'}
+  - {address: '192.168.
+tasks_databases0.1'}
   - {address: '2001:db8:cafe:1111:faca::1'}
 tasks_bind_name_server:
   - {ns: a.example.com}
@@ -128,3 +130,7 @@ tasks_drupal_sites:
   - lero.local.fflch.usp.br
   - sce.local.fflch.usp.br
   - sti.local.fflch.usp.br
+
+# mariadb
+tasks_databases_sistemas_file: '../../files/databases_sistemas.csv'
+tasks_databases_sites_file: '../../files/databases_sites.csv'
