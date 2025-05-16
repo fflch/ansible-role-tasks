@@ -125,11 +125,12 @@ tasks_drupal_repo: 'https://github.com/fflch/drupal.git'
 tasks_drupal_dest: '/var/www/drupal'
 tasks_drupal_repo_version: 'v8.9.16a'
 tasks_drupal_database: '192.168.8.10'
-tasks_drupal_sites:
-  - drupal.local.fflch.usp.br
-  - lero.local.fflch.usp.br
-  - sce.local.fflch.usp.br
-  - sti.local.fflch.usp.br
+tasks_drupal_sites_file: '../../files/sites.csv'
+# tasks_drupal_sites:
+#   - drupal.local.fflch.usp.br
+#   - lero.local.fflch.usp.br
+#   - sce.local.fflch.usp.br
+#   - sti.local.fflch.usp.br
 
 # mariadb
 tasks_databases_sistemas_file: '../../files/databases_sistemas.csv'

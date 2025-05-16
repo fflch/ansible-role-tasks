@@ -1,9 +1,8 @@
-# Inicialmente, vamos criar as senhas no chaveiro
-- name: lê o arquivo csv
+- name: Lê o arquivo CSV os nomes dos banco de dados
   set_fact:
     databases_file: "{{ lookup('file', tasks_databases_sites_file) }}"
 
-- name: csv to list
+- name: Gera lista com os nomes dos banco de dados a partir do arquivo CSV
   set_fact:
     databases: "{{ databases_file.split('\n') }}"
 
@@ -14,14 +13,11 @@
   delegate_to: localhost
   loop: "{{ databases }}"
 
-# Criar os databases a partir de um csv, exemplo está no playbook mariadbmaster no provisioner
-
-### build mysql_users
-- name: Initialize an empty list for mysql_users
+- name: Inicializa uma lista vazia para os usuários MySQL
   set_fact:
     mysql_users: []
 
-- name: build mysql_databases
+- name: Cria os usuários MySQL
   set_fact:
     mysql_users: >
       {{ mysql_users +
@@ -34,10 +30,16 @@
       }}
   loop: "{{ databases }}"
 
-# falta fazer 
+- name: Inicializa uma lista vazia para os bancos de dados MySQL
+  set_fact:
+    mysql_databases: []
 
-#mysql_databases: []
-#   - name: example
-#     collation: utf8_general_ci
-#     encoding: utf8
-
+- name: Cria os bancos de dados MySQL
+  set_fact:
+    mysql_databases: >
+      {{ mysql_databases + [{
+        'name': item,
+        'collation': 'utf8_general_ci',
+        'encoding': 'utf8'
+      }]}}
+  loop: "{{ databases }}"  
