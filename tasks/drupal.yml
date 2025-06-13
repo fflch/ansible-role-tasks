@@ -62,6 +62,8 @@
             --account-pass="admin" --yes
   args:
       chdir: "{{ tasks_drupal_dest }}"
+  notify:
+  - restart apache2      
   loop: "{{ sites_status.results }}"
   when: not item.stat.exists
   
@@ -85,10 +87,14 @@
       chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
   loop: "{{ sites }}"
 
-
-
-# task do restart do apach2
-
-# Task do cron
-#*/5 * * * * /usr/local/bin/php /home/myuser/bin/drush elysia-cron run --root=/home/mysite/public_html --uri=www.mysite.com > /home/mysite/cron.log 2>&1
-
+- name: Adicionar tarefa de backup diário
+  ansible.builtin.cron:
+    name: "Sites Drupal"
+    minute: "*/5"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: "/usr/local/bin/php /home/myuser/bin/drush elysia-cron run --root=/home/mysite/public_html --uri=www.mysite.com > /home/mysite/cron.log 2>&1"
+    user: "root"
+    state: present
