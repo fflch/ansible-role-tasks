@@ -58,7 +58,7 @@
   cron:
     name: "Unpause Printers"
     minute: "*/1"
-    job: "/root/unpause_printers.sh"
+    job: "bash /root/unpause_printers.sh"
 
 - name: Restart service
   service:
