@@ -14,5 +14,5 @@
 impressoras=`lpstat -p | cut -d" " -f2,3 | grep _hp_ | grep -v "está" | cut -d" " -f1`
 for impressora in $impressoras; do
    echo "$(date) $impressora" >> /tmp/impressoras.csv
-   lpadmin -p "$impressora" -E
+   /usr/sbin/lpadmin -p "$impressora" -E
 done
