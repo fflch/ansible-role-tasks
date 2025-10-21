@@ -1,10 +1,22 @@
-- name: Lê o arquivo CSV os nomes dos banco de dados
+- name: Lê o arquivo CSV os nomes dos banco de dados para os sites
   set_fact:
-    databases_file: "{{ lookup('file', tasks_databases_sites_file) }}"
+    databases_sites_file: "{{ lookup('file', tasks_databases_sites_file) }}"
 
-- name: Gera lista com os nomes dos banco de dados a partir do arquivo CSV
+- name: Lê o arquivo CSV os nomes dos banco de dados para os sistemas
   set_fact:
-    databases: "{{ databases_file.split('\n') }}"
+    databases_sistemas_file: "{{ lookup('file', tasks_databases_sistemas_file) }}"
+
+- name: Gera lista com os nomes dos banco de dados dos sites a partir do arquivo CSV
+  set_fact:
+    databases_sites: "{{ databases_sites_file.split('\n') }}"
+
+- name: Gera lista com os nomes dos banco de dados dos sistemas a partir do arquivo CSV
+  set_fact:
+    databases_sistemas: "{{ databases_sistemas_file.split('\n') }}"
+
+- name: juntando os nomes dos banco de dados dos sites e dos sistemas
+  set_fact:
+    databases: "{{ databases_sites | union(databases_sistemas) }}"
 
 - name: Cria senhas no chaveiros para os bancos que não tem senha
   shell: |
