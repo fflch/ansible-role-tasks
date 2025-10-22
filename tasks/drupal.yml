@@ -1,17 +1,9 @@
-- name: Lê o arquivo CSV com os endereços dos sites
-  set_fact:
-    sites_file: "{{ lookup('file', tasks_drupal_sites_file) }}"
+- name: Install a list of packages for drupal
+  apt:
+    pkg:
+    - mariadb-client
 
-- name: Gera lista com os endereços dos sites a partir do arquivo CSV
-  set_fact:
-    sites: "{{ sites_file.split('\n') }}"
-
-- name: Verificar se o diretório existe para cada site
-  stat:
-    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
-  loop: "{{ sites }}"
-  register: sites_status
-
+# 1 - baixa o repositório drupal da FFLCH
 - name: Lista o Gitconfig
   command: git config --list
   register: gitconfig
@@ -40,6 +32,21 @@
     COMPOSER_NO_INTERACTION: "1"
     COMPOSER_ALLOW_SUPERUSER: "1"
 
+# 2 - configuração site a site 
+- name: Lê o arquivo CSV com os endereços dos sites
+  set_fact:
+    sites_file: "{{ lookup('file', tasks_drupal_sites_file) }}"
+
+- name: Gera lista com os endereços dos sites a partir do arquivo CSV
+  set_fact:
+    sites: "{{ sites_file.split('\n') }}"
+
+- name: Verificar se o diretório existe para cada site
+  stat:
+    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
+  loop: "{{ sites }}"
+  register: sites_status
+
 - name: Configura o Virtualhost
   template:
     src: templates/virtualhost.conf
@@ -58,19 +65,49 @@
             --sites-subdir={{ item.item }} \
             --db-url=mysql://{{ item.item.split('.')[0] }}:{{ lookup('passwordstore', 'sti/servidores/mysql/'+item.item.split('.')[0]) }}@{{ tasks_drupal_database }}/{{ item.item.split('.')[0] }} \
             --site-name={{ item.item.split('.')[0] }} \
-            --account-name="admin" \
+            --account-name="fflch" \
             --account-pass="admin" --yes
   args:
       chdir: "{{ tasks_drupal_dest }}"
   notify:
-  - restart apache2      
+    - restart apache2 
   loop: "{{ sites_status.results }}"
   when: not item.stat.exists
-  
-- name: Insere linha no arquivo settings.php 
+
+- name: Criando as pasta privates
+  ansible.builtin.file:
+    path: "/private/{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0700'
+  loop: "{{ sites }}"
+
+- name: .htaccess para as pastas privates
+  ansible.builtin.template:
+    src: htaccess.drupal.j2
+    dest: "/private/{{ item }}/.htaccess"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  loop: "{{ sites }}"
+
+- name: Insere linha do caminho da pasta private no settings.php 
   lineinfile:
     path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
     line: "$settings['file_private_path']='/private/{{ item }}';"
+  loop: "{{ sites }}"
+
+- name: Insere trusted_host_patterns no settings.php
+  ansible.builtin.blockinfile:
+    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - trusted_host_patterns"
+    insertafter: EOF
+    block: |
+      $settings['trusted_host_patterns'] = [
+        '^www\.{{ item | regex_replace('\\.', '\\\\.') }}$',
+        '^{{ item | regex_replace('\\.', '\\\\.') }}$',
+      ];
   loop: "{{ sites }}"
 
 - name: Atualiza os bancos de dados dos sites
@@ -87,14 +124,95 @@
       chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
   loop: "{{ sites }}"
 
+- name: Limpa o Cache dos Sites
+  command: >-
+    {{ tasks_drupal_dest }}/vendor/bin/drush cr --uri="{{ item }}" -y
+  args:
+      chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
+  loop: "{{ sites }}"
+
+- name: Acertando o www-data
+  ansible.builtin.file:
+    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
+    owner: www-data
+    group: www-data
+    recurse: yes
+  loop: "{{ sites }}"
+
 - name: Adicionar tarefa de backup diário
   ansible.builtin.cron:
-    name: "Sites Drupal"
+    name: "Cron {{ item }}"
     minute: "*/5"
     hour: "*"
     day: "*"
     month: "*"
     weekday: "*"
-    job: "/usr/local/bin/php /home/myuser/bin/drush elysia-cron run --root=/home/mysite/public_html --uri=www.mysite.com > /home/mysite/cron.log 2>&1"
+    job: "{{ tasks_drupal_dest }}/vendor/bin/drush cron --uri={{ item }}"
     user: "root"
     state: present
+  loop: "{{ sites }}"
+
+- name: cria o diretório tools para colocarmos scripts diversos
+  file:
+    dest: "/root/drupal/tools"
+    state: directory
+    owner: root
+    group: root
+    recurse: yes
+
+- name: Copia report.sh.j2
+  template:
+    src: "drupal/report.sh.j2"
+    dest: "/root/drupal/tools/report.sh"
+    owner: root
+    group: root
+    mode: 0700
+
+- name: roda script report no cron
+  cron:
+    name: "report_aegir_drupal"
+    minute: "0"
+    hour: "4"
+    job: "/root/drupal/tools/report.sh"
+    user: root
+
+- name: cria o diretório tools para colocarmos scripts diversos
+  file:
+    dest: "/.tokens/"
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: yes
+
+- name: copia secret token usado pelo módulo loginbytoken do fflchprofile
+  ansible.builtin.copy:
+    dest: "/.tokens/loginbytoken.txt"
+    content: "{{ lookup('passwordstore', 'sti/tokens/deploy_secret_key') }}"
+    owner: www-data
+    group: www-data
+    mode: '0600'
+
+- name: copia senha email noreply
+  ansible.builtin.copy:
+    dest: "/.tokens/noreply.txt"
+    content: "{{ lookup('passwordstore', 'sti/emails/noreply.sites.fflch@usp.br') }}"
+    owner: www-data
+    group: www-data
+    mode: '0600'
+
+- name: copia token boleto
+  ansible.builtin.copy:
+    dest: "/.tokens/boleto.txt"
+    content: "{{ lookup('passwordstore', 'sti/tokens/boleto_soap/password') }}"
+    owner: www-data
+    group: www-data
+    mode: '0600'
+
+- name: copia senha do user1
+  ansible.builtin.copy:
+    dest: "/.tokens/user1.txt"
+    content: "{{ lookup('passwordstore', 'sti/drupal/users/fflch') }}"
+    owner: www-data
+    group: www-data
+    mode: '0600'
+

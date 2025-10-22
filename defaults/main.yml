@@ -1,7 +1,6 @@
 ---
 tasks_msmtp: false
 tasks_php: false
-tasks_zoneminder: false
 tasks_cups: false
 tasks_bind: false
 tasks_django: false
@@ -61,16 +60,6 @@ tasks_databases0.1'}
 tasks_bind_name_server:
   - {ns: a.example.com}
   - {ns: b.example.com}
-
-###################################
-tasks_zoneminder_apache2_confs: zoneminder
-tasks_zoneminder_version: '1.36'
-tasks_zoneminder_frontend_url: 'zoneminder.example.br'
-tasks_zoneminder_mysql:
-  database: zm
-  host: '127.0.0.1'
-  user: zm
-  password: 'SuperPassword'
 
 ###################################
 tasks_freeradius_secret: SuperPass0rd
