@@ -1,0 +1,51 @@
+#!/bin/bash
+
+cd /var/www/drupal/
+
+where='/var/www/drupal/web/sites'
+
+body=''
+cron=''
+cache=''
+erro500=''
+
+sites=$(ls $where | grep fflch.usp.br | sort)
+for site in $sites
+do
+    # erros no cache
+    msg=$(/var/www/drupal/vendor/bin/drush cr --uri=${site} 2>&1)
+    if [[ "$msg" =~ error* ]]
+    then
+      cache="${cache}\n<li>${site}</li>"
+    fi
+
+    # erros no cron
+    msg=$(/var/www/drupal/vendor/bin/drush cron --uri=${site} 2>&1)
+    if [[ "$msg" =~ error* ]]
+    then
+      cron="${cron}\n<li>${site}</li>"
+    fi
+
+    # sites com erro 500
+    if curl --silent http://${site} | grep 'The website encountered an unexpected error'; then 
+      erro500="${erro500}\n<li>${site}</li>"
+    fi
+
+done
+
+# Compondo o email
+[[ ! -z "$erro500" ]] && body="${body}<h3>Sites com erro 500:</h3><ul>${erro500}</ul>"
+[[ ! -z "$cron" ]] && body="${body}<h3>Sites com problemas no cron:</h3><ul>${cron}</ul>"
+[[ ! -z "$cache" ]] && body="${body}<h3>Sites com problemas no cache rebuild:</h3><ul>${cache}</ul>"
+
+# Envio do Email - quando body não estã vazio
+if [ ! -z "$body" ]
+then
+  d=$(date +%d/%m/%Y)
+  assunto="Relatório problemas Drupal FFLCH - ${d}"
+  body="<div>Prezados(as) analistas, por favor verificar os seguintes problemas:</div><br>${body}"
+  mail="From: fffchsti@usp.br\nMime-Version: 1.0\nContent-Type: text/html\nSubject: ${assunto}\n\n${body}"
+  echo -e ${mail} | msmtp thiago.verissimo@usp.br
+  echo -e ${mail} | msmtp acesarfs@usp.br
+  echo -e ${mail} | msmtp monica.colacique@usp.br
+fi
