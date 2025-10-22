@@ -11,9 +11,6 @@
 - include: php.yml
   when: tasks_php
 
-- include: zoneminder.yml
-  when: tasks_zoneminder
-
 - include: bind.yml
   when: tasks_bind
 
@@ -43,3 +40,6 @@
 
 - include: drupal.yml
   when: tasks_drupal
+
+- include: ocsinventoryserver.yml
+  when: tasks_ocsinventoryserver
