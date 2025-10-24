@@ -133,6 +133,7 @@
     state: restarted
     enabled: yes
 
+
 - name: Criar schema do banco OCS (se ainda não existir)
   ansible.builtin.shell: |
     if ! mysql -h {{ tasks_ocsinventoryserver_db_host }} \
@@ -154,16 +155,16 @@
   register: ocs_schema_import
   changed_when: "'Importando schema' in ocs_schema_import.stdout"
 
-- name: Alterar senha do admin OCS para SHA256
-  ansible.builtin.shell:
-    cmd: |
-      mysql -h {{ tasks_ocsinventoryserver_db_host }} \
-      -u {{ tasks_ocsinventoryserver_db_user }} \
-      -p{{ tasks_ocsinventoryserver_db_password }} \
-      -D {{ tasks_ocsinventoryserver_db_name }} \
-      -e "UPDATE operators SET passwd = SHA2('{{ tasks_ocsinventoryserver_admin_password }}', 256) WHERE id = 'admin';"
-  args:
-    executable: /bin/bash
+# - name: Alterar senha do admin OCS para SHA256
+#   ansible.builtin.shell:
+#     cmd: |
+#       mysql -h {{ tasks_ocsinventoryserver_db_host }} \
+#       -u {{ tasks_ocsinventoryserver_db_user }} \
+#       -p{{ tasks_ocsinventoryserver_db_password }} \
+#       -D {{ tasks_ocsinventoryserver_db_name }} \
+#       -e "UPDATE operators SET passwd = SHA2('{{ tasks_ocsinventoryserver_admin_password }}', 256) WHERE id = 'admin';"
+  # args:
+  #   executable: /bin/bash
 
 - name: Remover install.php por segurança
   ansible.builtin.file:
