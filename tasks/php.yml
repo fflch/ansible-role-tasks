@@ -46,8 +46,8 @@
     apache_create_vhosts: false
     apache_remove_default_vhost: false
     apache_mods_enabled:
-      - rewrite.load
-      - ssl.load
+      - rewrite
+      - ssl
 
 - name: index.html para virtualhost 000-default
   copy:
