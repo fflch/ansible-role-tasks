@@ -75,6 +75,11 @@
     state: present
     update_cache: True
 
+- name: Ensure directory /etc/ldap/ exists
+  ansible.builtin.file:
+    path: /etc/ldap/
+    state: directory
+
 - name: Em ambiente dev configura para não usar certificado no ldap
   shell: echo "TLS_REQCERT ALLOW" > /etc/ldap/ldap.conf
 
