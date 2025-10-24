@@ -12,9 +12,11 @@ tasks_ftp: false
 tasks_dhcp: false
 tasks_drupal: false
 tasks_databases: false
+tasks_ocsinventoryserver: false
 
 # php
 tasks_php_version: '8.2'
+
 # msmtp
 tasks_msmtp_email: 'testes.sti.fflch@usp.br'
 tasks_msmtp_password: '123'
@@ -119,3 +121,15 @@ tasks_drupal_sites_file: '../../files/sites.csv'
 # mariadb
 tasks_databases_sistemas_file: '../../files/databases_sistemas.csv'
 tasks_databases_sites_file: '../../files/databases_sites.csv'
+
+# variáveis ocsinventory
+tasks_ocsinventoryserver_version: "2.12.3"
+tasks_ocsinventoryserver_download_url: "https://github.com/OCSInventory-NG/OCSInventory-ocsreports/releases/download/{{ tasks_ocsinventoryserver_version }}/OCSNG_UNIX_SERVER-{{ tasks_ocsinventoryserver_version }}.tar.gz"
+tasks_ocsinventoryserver_temp_dir: "/tmp"
+tasks_ocsinventoryserver_extracted_dir: "{{ tasks_ocsinventoryserver_temp_dir }}/OCSNG_UNIX_SERVER-{{ tasks_ocsinventoryserver_version }}"
+tasks_ocsinventoryserver_db_host: "192.168.8.10"
+tasks_ocsinventoryserver_db_port: "3306"
+tasks_ocsinventoryserver_db_name: "ocsinventoryserver"
+tasks_ocsinventoryserver_db_user: "ocsinventoryserver"
+tasks_ocsinventoryserver_db_password: "ocsinventoryserver"
+tasks_ocsinventoryserver_admin_password: "ocs"

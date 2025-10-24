@@ -8,7 +8,7 @@
     tasks_cups_template_cups_allowed_networks: "{{ tasks_cups_csv_file_content.split('\n') }}"
 ###### Redes permitidas - Fim
 
-- include: partials/raw_printers.yml
+- import_tasks: partials/raw_printers.yml
 
 - name:
   include_role:
@@ -27,7 +27,7 @@
       - hp-ppd
       - openprinting-ppds
 
-- include: partials/ipp_printers.yml
+- import_tasks: partials/ipp_printers.yml
 
 - name: org.cups.cupsd.socket.d
   file:
