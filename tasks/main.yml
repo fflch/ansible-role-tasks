@@ -1,45 +1,45 @@
-#- include: common.yml
-#- include: ssh.yml
-#- include: vars.yml
+#- import_tasks: common.yml
+#- import_tasks: ssh.yml
+#- import_tasks: vars.yml
 
-- include: cups.yml
+- import_tasks: cups.yml
   when: tasks_cups
 
-- include: msmtp.yml
+- import_tasks: msmtp.yml
   when: tasks_msmtp
 
-- include: php.yml
+- import_tasks: php.yml
   when: tasks_php
 
-- include: bind.yml
+- import_tasks: bind.yml
   when: tasks_bind
 
-- include: django.yml
+- import_tasks: django.yml
   when: tasks_django
 
-- include: nginxrevproxy.yml
+- import_tasks: nginxrevproxy.yml
   when: tasks_nginxrevproxy
 
-- include: freeradius.yml
+- import_tasks: freeradius.yml
   when: tasks_freeradius
 
-- include: rsyslog.yml
+- import_tasks: rsyslog.yml
   when: tasks_rsyslog
 
-- include: entrypointbackup.yml
+- import_tasks: entrypointbackup.yml
   when: tasks_entrypointbackup
 
-- include: ftp.yml
+- import_tasks: ftp.yml
   when: tasks_ftp
 
-- include: dhcp.yml
+- import_tasks: dhcp.yml
   when: tasks_dhcp
 
-- include: databases.yml
+- import_tasks: databases.yml
   when: tasks_databases
 
-- include: drupal.yml
+- import_tasks: drupal.yml
   when: tasks_drupal
 
-- include: ocsinventoryserver.yml
+- import_tasks: ocsinventoryserver.yml
   when: tasks_ocsinventoryserver
