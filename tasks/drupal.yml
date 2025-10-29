@@ -67,8 +67,8 @@
             --sites-subdir={{ item.item }} \
             --db-url=mysql://{{ item.item.split('.')[0] }}:{{ lookup('passwordstore', 'sti/servidores/mysql/'+item.item.split('.')[0]) }}@{{ tasks_drupal_database }}/{{ item.item.split('.')[0] }} \
             --site-name={{ item.item.split('.')[0] }} \
-            --account-name="fflch" \
-            --account-pass="admin" --yes
+            --account-name="{{tasks_drupal_account_name}}" \
+            --account-pass="{{tasks_drupal_account_pass}}" --yes
   args:
       chdir: "{{ tasks_drupal_dest }}"
   notify:

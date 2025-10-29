@@ -117,6 +117,8 @@ tasks_drupal_dest: '/var/www/drupal'
 tasks_drupal_repo_version: 'v9.1.0a'
 tasks_drupal_database: '192.168.8.10'
 tasks_drupal_sites_file: '../../files/sites.csv'
+tasks_drupal_account_name: 'fflch'
+tasks_drupal_account_pass: 'fflch'
 
 # mariadb
 tasks_databases_sistemas_file: '../../files/databases_sistemas.csv'
