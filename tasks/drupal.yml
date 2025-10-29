@@ -84,6 +84,15 @@
     mode: '0700'
   loop: "{{ sites }}"
 
+- name: Criando as pasta sync dentro das privates
+  ansible.builtin.file:
+    path: "/private/{{ item }}/sync"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0700'
+  loop: "{{ sites }}"
+
 - name: .htaccess para as pastas privates
   ansible.builtin.template:
     src: htaccess.drupal.j2
@@ -98,6 +107,14 @@
     path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
     line: "$settings['file_private_path']='/private/{{ item }}';"
   loop: "{{ sites }}"
+
+- name: Insere linha do caminho da pasta sync no settings.php 
+  lineinfile:
+    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
+    line: "$settings['config_sync_directory']='/private/{{ item }}/sync';"
+  loop: "{{ sites }}"
+
+  
 
 - name: Insere trusted_host_patterns no settings.php
   ansible.builtin.blockinfile:
