@@ -7,7 +7,7 @@
 
 - name: Copia msmtprc.j2
   template:
-    src: ./msmtprc.j2
+    src: msmtprc.j2
     dest: /etc/msmtprc
     owner: root
     group: root

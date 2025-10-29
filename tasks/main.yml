@@ -1,7 +1,9 @@
+# tasks obrigatórias para todos servidores
 - import_tasks: common.yml
 - import_tasks: ssh.yml
 - import_tasks: vars.yml
 
+# tasks que são ligadas ou desligadas a partir do contexto
 - import_tasks: cups.yml
   when: tasks_cups
 
