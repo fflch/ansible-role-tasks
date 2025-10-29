@@ -10,7 +10,7 @@
     src: ./msmtprc.j2
     dest: /etc/msmtprc
     owner: root
-    group: msmtp
+    group: root
     mode: 0640
 
 - name: Default mailrc
