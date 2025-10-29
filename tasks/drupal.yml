@@ -214,7 +214,7 @@
 - name: copia senha email noreply
   ansible.builtin.copy:
     dest: "/.tokens/noreply.txt"
-    content: "{{ lookup('passwordstore', 'sti/emails/noreply.sites.fflch@usp.br') }}"
+    content: "{{ lookup('passwordstore', 'sti/emails/noreply.sites.fflch@usp.br/senha-app') }}"
     owner: www-data
     group: www-data
     mode: '0600'
