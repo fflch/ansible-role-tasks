@@ -67,8 +67,8 @@
             --sites-subdir={{ item.item }} \
             --db-url=mysql://{{ item.item.split('.')[0] }}:{{ lookup('passwordstore', 'sti/servidores/mysql/'+item.item.split('.')[0]) }}@{{ tasks_drupal_database }}/{{ item.item.split('.')[0] }} \
             --site-name={{ item.item.split('.')[0] }} \
-            --account-name="fflch" \
-            --account-pass="admin" --yes
+            --account-name="{{tasks_drupal_account_name}}" \
+            --account-pass="{{tasks_drupal_account_pass}}" --yes
   args:
       chdir: "{{ tasks_drupal_dest }}"
   notify:
@@ -79,6 +79,15 @@
 - name: Criando as pasta privates
   ansible.builtin.file:
     path: "/private/{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0700'
+  loop: "{{ sites }}"
+
+- name: Criando as pasta sync dentro das privates
+  ansible.builtin.file:
+    path: "/private/{{ item }}/sync"
     state: directory
     owner: www-data
     group: www-data
@@ -99,6 +108,14 @@
     path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
     line: "$settings['file_private_path']='/private/{{ item }}';"
   loop: "{{ sites }}"
+
+- name: Insere linha do caminho da pasta sync no settings.php 
+  lineinfile:
+    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
+    line: "$settings['config_sync_directory']='/private/{{ item }}/sync';"
+  loop: "{{ sites }}"
+
+  
 
 - name: Insere trusted_host_patterns no settings.php
   ansible.builtin.blockinfile:
@@ -197,7 +214,7 @@
 - name: copia senha email noreply
   ansible.builtin.copy:
     dest: "/.tokens/noreply.txt"
-    content: "{{ lookup('passwordstore', 'sti/emails/noreply.sites.fflch@usp.br') }}"
+    content: "{{ lookup('passwordstore', 'sti/emails/noreply.sites.fflch@usp.br/senha-app') }}"
     owner: www-data
     group: www-data
     mode: '0600'

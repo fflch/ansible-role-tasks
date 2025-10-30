@@ -6,11 +6,6 @@
     cache_valid_time: 86400 # One day
     autoremove: yes
 
-- name: Remove "python3-pip" package
-  ansible.builtin.apt:
-    name: python3-pip
-    state: absent
-
 - name: Install a list of common packages
   apt:
     pkg:
@@ -22,10 +17,10 @@
     - mariadb-client
     - python3-pip
 # non-free
-#    - rar
-#    - unrar
-#    - zip
-#    - unzip
+    - rar
+    - unrar
+    - zip
+    - unzip
 
 - name: Corrige o timezone para America/Sao_Paulo
   include_role:
@@ -62,20 +57,3 @@
       - "10.0.0.0 mask 255.0.0.0 nomodify notrap"
       - "172.19.0.0 mask 255.255.0.0 nomodify notrap"
       - "143.107.0.0 mask 255.255.0.0 nomodify notrap"
-
-- name: Creates directory /root/.ssh
-  file:
-    path: /root/.ssh
-    state: directory
-    owner: root
-    group: root
-    mode: '0700'
-    recurse: yes
-
-#- name: Install the MySQL-python through pip
-#  include_role:
-#    name: geerlingguy.pip
-#  vars:
-#    pip_package: python3-pip
-#    pip_install_packages:
-#      - pymysql
