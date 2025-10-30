@@ -17,8 +17,8 @@
     - mariadb-client
     - python3-pip
 # non-free
-    - rar
-    - unrar
+    #- rar
+    #- unrar
     - zip
     - unzip
 
