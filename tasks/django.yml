@@ -4,27 +4,31 @@
     - git
     - apt-transport-https
     - curl
-    - python3-dev
+    # - python-dev 
+    - python3-dev 
     - default-libmysqlclient-dev
     - python3-venv
     - python3-pillow
     - python3-setuptools
     - python3-lxml
+    # - python-pillow
+    # - python-setuptools
+    # - python-lxml
     - libpam-systemd
     - systemd-container
 
-- name: Aplica role gforcada.compile-python
-  include_role:
-    name: gforcada.compile-python
-  vars:
-    python_27: false
-    python_36: false
-    python_39: false
-    python_310: true
-    python_311: true
-    python_312: true
-    python_313: true
-
+# - name: Aplica role gforcada.compile-python
+#   include_role:
+#     name: gforcada.compile-python
+#   vars:
+#     python_27: false
+#     python_36: false
+#     python_39: false
+#     python_310: true
+#     python_311: true
+#     python_312: true
+#     python_313: true
+    
 - include_role:
     name: geerlingguy.nodejs
   vars:
