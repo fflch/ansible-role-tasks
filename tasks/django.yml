@@ -32,4 +32,4 @@
 - include_role:
     name: geerlingguy.nodejs
   vars:
-    nodejs_version: "10.x"
+    nodejs_version: "24.x"
