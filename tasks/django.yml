@@ -4,16 +4,12 @@
     - git
     - apt-transport-https
     - curl
-    - python-dev 
-    - python3-dev 
+    - python3-dev
     - default-libmysqlclient-dev
     - python3-venv
     - python3-pillow
     - python3-setuptools
     - python3-lxml
-    - python-pillow
-    - python-setuptools
-    - python-lxml
     - libpam-systemd
     - systemd-container
 
@@ -28,8 +24,8 @@
     python_311: true
     python_312: true
     python_313: true
-    
+
 - include_role:
     name: geerlingguy.nodejs
   vars:
-    nodejs_version: "10.x"
+    nodejs_version: "24.x"
