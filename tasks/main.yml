@@ -19,8 +19,8 @@
 - import_tasks: django.yml
   when: tasks_django
 
-- import_tasks: nginxrevproxy.yml
-  when: tasks_nginxrevproxy
+#- import_tasks: nginxrevproxy.yml
+#  when: tasks_nginxrevproxy
 
 - import_tasks: freeradius.yml
   when: tasks_freeradius

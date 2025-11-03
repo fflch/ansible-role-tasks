@@ -76,6 +76,13 @@
   loop: "{{ sites_status.results }}"
   when: not item.stat.exists
 
+- name: Atualizando senha do DB no settings.php 
+  lineinfile:
+    path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
+    regexp: "^\\s*'password'\\s*=>"
+    line: "  'password' => '{{ lookup('passwordstore', 'sti/servidores/mysql/'+item.split('.')[0]) }}',"
+  loop: "{{ sites }}"
+
 - name: Criando as pasta privates
   ansible.builtin.file:
     path: "/private/{{ item }}"
@@ -106,16 +113,20 @@
 - name: Insere linha do caminho da pasta private no settings.php 
   lineinfile:
     path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
+    regexp: "^(\\$settings\\['file_private_path'\\])"
     line: "$settings['file_private_path']='/private/{{ item }}';"
+    insertafter: EOF
+    state: present
   loop: "{{ sites }}"
 
 - name: Insere linha do caminho da pasta sync no settings.php 
   lineinfile:
     path: "{{ tasks_drupal_dest }}/web/sites/{{ item }}/settings.php"
+    regexp: "^(\\$settings\\['config_sync_directory'\\])"
     line: "$settings['config_sync_directory']='/private/{{ item }}/sync';"
+    insertafter: EOF
+    state: present
   loop: "{{ sites }}"
-
-  
 
 - name: Insere trusted_host_patterns no settings.php
   ansible.builtin.blockinfile:
