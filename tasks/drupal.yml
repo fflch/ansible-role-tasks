@@ -27,11 +27,11 @@
     update: yes
 
 - name: Executa o Composer Install
-  composer:
+  community.general.composer:
     command: install
     working_dir: "{{ tasks_drupal_dest }}"
+    no_interaction: true
   environment:
-    COMPOSER_NO_INTERACTION: "1"
     COMPOSER_ALLOW_SUPERUSER: "1"
 
 # 2 - configuração site a site 
@@ -147,12 +147,13 @@
       chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
   loop: "{{ sites }}"
 
-- name: Atualiza as entidades dos sites
-  command: >-
-    {{ tasks_drupal_dest }}/vendor/bin/drush entup {{ item }} -y
-  args:
-      chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
-  loop: "{{ sites }}"
+# Vamos criar uma task drupal_manage.yml e passar essa task para lá
+#- name: Atualiza as entidades dos sites
+#  command: >-
+#    {{ tasks_drupal_dest }}/vendor/bin/drush entup {{ item }} -y
+#  args:
+#      chdir: "{{ tasks_drupal_dest }}/web/sites/{{ item }}"
+#  loop: "{{ sites }}"
 
 - name: Limpa o Cache dos Sites
   command: >-
