@@ -27,10 +27,9 @@
     update: yes
 
 - name: Executa o Composer Install
-  community.general.composer:
+  composer:
     command: install
     working_dir: "{{ tasks_drupal_dest }}"
-    no_interaction: true
   environment:
     COMPOSER_ALLOW_SUPERUSER: "1"
 
