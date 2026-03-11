@@ -6,7 +6,7 @@
 ######################## sistemas domains.csv em https
 - name: read from file
   set_fact:
-    domains_file: "{{ lookup('file', '../../files/domains.csv') }}"
+    domains_file: "{{ lookup('file', '../../../files/domains.csv') }}"
 
 - name: csv to list
   set_fact:

@@ -1,47 +1,47 @@
+### Tasks Thiago
 # tasks obrigatórias para todos servidores
 - import_tasks: common.yml
 - import_tasks: ssh.yml
 - import_tasks: vars.yml
 
-# tasks que são ligadas ou desligadas a partir do contexto
-- import_tasks: cups.yml
-  when: tasks_cups
-
 - import_tasks: msmtp.yml
   when: tasks_msmtp
 
+- import_tasks: cups.yml
+  when: tasks_cups
+
+- import_tasks: entrypointbackup.yml
+  when: tasks_entrypointbackup
+
+- import_tasks: rsyslog.yml
+  when: tasks_rsyslog
+
+- import_tasks: ftp.yml
+  when: tasks_ftp
+
+### Mônica
+- import_tasks: django.yml
+  when: tasks_django
+
+- import_tasks: ocsinventoryserver.yml
+  when: tasks_ocsinventoryserver
+
+### Ricardo
 - import_tasks: php.yml
   when: tasks_php
 
 - import_tasks: bind.yml
   when: tasks_bind
 
-- import_tasks: django.yml
-  when: tasks_django
-
-#- import_tasks: nginxrevproxy.yml
-#  when: tasks_nginxrevproxy
-
-- import_tasks: freeradius.yml
-  when: tasks_freeradius
-
-- import_tasks: rsyslog.yml
-  when: tasks_rsyslog
-
-- import_tasks: entrypointbackup.yml
-  when: tasks_entrypointbackup
-
-- import_tasks: ftp.yml
-  when: tasks_ftp
-
 - import_tasks: dhcp.yml
   when: tasks_dhcp
+
+### Augusto
+- import_tasks: nginxrevproxy.yml
+  when: tasks_nginxrevproxy
 
 - import_tasks: databases.yml
   when: tasks_databases
 
 - import_tasks: drupal.yml
   when: tasks_drupal
-
-- import_tasks: ocsinventoryserver.yml
-  when: tasks_ocsinventoryserver

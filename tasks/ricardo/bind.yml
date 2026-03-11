@@ -46,7 +46,7 @@
 
 - name: Copy /var/cache/bind/keys
   copy:
-    src: ../../files/bind/keys/
+    src: ../../../files/bind/keys/
     dest: /var/cache/bind/keys
     mode: '0644'
 
@@ -117,7 +117,7 @@
 
 - name: copia os arquivos do build_zone_records
   copy:
-    src: "../../files/bind/"
+    src: "../../../files/bind/"
     dest: "/root/build_zone_records/files/"
     owner: root
     group: bind
