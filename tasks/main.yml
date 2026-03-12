@@ -1,47 +1,47 @@
 ### Tasks Thiago
 # tasks obrigatórias para todos servidores
-- import_tasks: common.yml
-- import_tasks: ssh.yml
-- import_tasks: vars.yml
+- import_tasks: thiago/common.yml
+- import_tasks: thiago/ssh.yml
+- import_tasks: thiago/vars.yml
 
-- import_tasks: msmtp.yml
+- import_tasks: thiago/msmtp.yml
   when: tasks_msmtp
 
-- import_tasks: cups.yml
+- import_tasks: thiago/cups.yml
   when: tasks_cups
 
-- import_tasks: entrypointbackup.yml
+- import_tasks: thiago/entrypointbackup.yml
   when: tasks_entrypointbackup
 
-- import_tasks: rsyslog.yml
+- import_tasks: thiago/rsyslog.yml
   when: tasks_rsyslog
 
-- import_tasks: ftp.yml
+- import_tasks: thiago/ftp.yml
   when: tasks_ftp
 
 ### Mônica
-- import_tasks: django.yml
+- import_tasks: monica/django.yml
   when: tasks_django
 
-- import_tasks: ocsinventoryserver.yml
+- import_tasks: monica/ocsinventoryserver.yml
   when: tasks_ocsinventoryserver
 
 ### Ricardo
-- import_tasks: php.yml
+- import_tasks: ricardo/php.yml
   when: tasks_php
 
-- import_tasks: bind.yml
+- import_tasks: ricardo/bind.yml
   when: tasks_bind
 
-- import_tasks: dhcp.yml
+- import_tasks: ricardo/dhcp.yml
   when: tasks_dhcp
 
 ### Augusto
-- import_tasks: nginxrevproxy.yml
+- import_tasks: augusto/nginxrevproxy.yml
   when: tasks_nginxrevproxy
 
-- import_tasks: databases.yml
+- import_tasks: augusto/databases.yml
   when: tasks_databases
 
-- import_tasks: drupal.yml
+- import_tasks: augusto/drupal.yml
   when: tasks_drupal
