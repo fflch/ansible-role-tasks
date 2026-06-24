@@ -13,3 +13,7 @@
   service:
     name: vsftpd
     state: restarted
+
+- name: Recarregar systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: yes

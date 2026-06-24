@@ -1,0 +1,7 @@
+RUSTFS_ACCESS_KEY={{ tasks_rustfs_access_key }}
+RUSTFS_SECRET_KEY={{ tasks_rustfs_secret_key }}
+RUSTFS_VOLUMES="{% for disk in tasks_rustfs_managed_disks %}{{ tasks_rustfs_base_dir }}/{{ disk.folder }}{% if not loop.last %} {% endif %}{% endfor %}"
+RUSTFS_ADDRESS=":9000"
+RUSTFS_CONSOLE_ENABLE=true
+RUST_LOG=error
+RUSTFS_OBS_LOG_DIRECTORY="/var/logs/rustfs/"

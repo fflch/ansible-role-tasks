@@ -1,0 +1,101 @@
+- name: Instalação pacotes
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop:
+    - parted
+    - xfsprogs
+    - unzip
+
+- name: Formata o disco
+  community.general.filesystem:
+    fstype: "{{ item.filesystem_type | default('xfs') }}"
+    dev: "{{ item.device }}"
+    opts: "-i size=512 -n ftype=1 -L {{ item.folder | upper }}"
+  loop:
+    "{{ tasks_rustfs_managed_disks }}"
+  when:
+    - tasks_rustfs_managed_disks is defined
+
+- name: Monta o sistema de arquivos de forma permanente
+  no_log: true
+  ansible.posix.mount:
+    path: "{{ [tasks_rustfs_base_dir,item.folder] | path_join }}"
+    src: "LABEL={{ item.folder | upper }}"
+    fstype: "{{ item.filesystem_type | default('xfs') }}"
+    opts: "{{ item.mount_opts | default('defaults,noatime,nodiratime') }}"
+    state: mounted
+  loop:
+    "{{ tasks_rustfs_managed_disks }}"
+  when:
+    - tasks_rustfs_managed_disks is defined
+
+- name: Criar o grupo de sistema 'rustfs-user'
+  ansible.builtin.group:
+    name: "{{ tasks_rustfs_user_group }}"
+    state: present
+    system: true
+
+- name: Criar o usuário de sistema 'rustfs-user'
+  ansible.builtin.user:
+    name: "{{ tasks_rustfs_user_group }}"
+    group: "{{ tasks_rustfs_user_group }}"
+    state: present
+    system: true
+    create_home: false
+
+- name: Aplicar chown rustfs-user:rustfs-user nos diretórios encontrados
+  ansible.builtin.file:
+    path: "{{ [tasks_rustfs_base_dir,item.folder] | path_join }}"
+    owner: "{{ tasks_rustfs_user_group }}"
+    group: "{{ tasks_rustfs_user_group }}"
+    state: directory
+    recurse: yes
+  loop:
+    "{{ tasks_rustfs_managed_disks }}"
+  when:
+    - tasks_rustfs_managed_disks is defined
+
+- name: Instalação do RustFS a partir do ZIP remoto
+  ansible.builtin.unarchive:
+    src: https://dl.rustfs.com/artifacts/rustfs/release/rustfs-linux-x86_64-musl-latest.zip
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0755'
+
+- name: Criando o arquivo de variáveis do ambiente
+  ansible.builtin.template:
+    src: rustfs/environment.j2
+    dest: /etc/default/rustfs
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Garantir que os diretórios base e de sistema existam com as permissões corretas
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ tasks_rustfs_user_group }}"
+    group: "{{ tasks_rustfs_user_group }}"
+    mode: '0750'
+  loop:
+    - /var/logs/rustfs
+    - /opt/tls
+
+- name: Criando os diretórios dos volumes RustFS
+  ansible.builtin.file:
+    path: "{{ tasks_rustfs_base_dir }}/{{ item.folder }}"
+    state: directory
+    owner: "{{ tasks_rustfs_user_group }}"
+    group: "{{ tasks_rustfs_user_group }}"
+    mode: '0750'
+  loop: "{{ tasks_rustfs_managed_disks }}"
+  when:
+    - tasks_rustfs_managed_disks is defined
+
+- name: Criando o arquivo de serviço do RustFS
+  ansible.builtin.template:
+    src: rustfs/service.j2
+    dest: /etc/systemd/system/rustfs.service
+  notify: Recarregar systemd

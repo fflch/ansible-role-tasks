@@ -36,6 +36,9 @@
 - import_tasks: ricardo/dhcp.yml
   when: tasks_dhcp
 
+- import_tasks: ricardo/rustfs.yml
+  when: tasks_rustfs
+
 ### Augusto
 - import_tasks: augusto/nginxrevproxy.yml
   when: tasks_nginxrevproxy

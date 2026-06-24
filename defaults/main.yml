@@ -13,6 +13,7 @@ tasks_dhcp: false
 tasks_drupal: false
 tasks_databases: false
 tasks_ocsinventoryserver: false
+tasks_rustfs: false
 
 # php
 tasks_php_version: '8.2'
@@ -135,3 +136,15 @@ tasks_ocsinventoryserver_db_name: "ocsinventoryserver"
 tasks_ocsinventoryserver_db_user: "ocsinventoryserver"
 tasks_ocsinventoryserver_db_password: "ocsinventoryserver"
 tasks_ocsinventoryserver_admin_password: "ocs"
+
+# rustfs
+tasks_rustfs_base_dir: /data
+tasks_rustfs_user_group: rustfs-user
+tasks_rustfs_access_key: "rustfsadmin"
+tasks_rustfs_secret_key: "rustfsadmin"
+tasks_rustfs_managed_disks:
+  - device: /dev/vdb
+    folder: rustfs0
+
+  - device: /dev/vdc
+    folder: rustfs1
