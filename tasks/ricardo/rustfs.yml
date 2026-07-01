@@ -59,7 +59,8 @@
 
 - name: Instalação do RustFS a partir do ZIP remoto
   ansible.builtin.unarchive:
-    src: https://dl.rustfs.com/artifacts/rustfs/release/rustfs-linux-x86_64-musl-latest.zip
+    # src: https://dl.rustfs.com/artifacts/rustfs/release/rustfs-linux-x86_64-musl-latest.zip
+    src: https://github.com/rustfs/rustfs/releases/download/1.0.0-beta.8/rustfs-linux-x86_64-gnu-latest.zip
     dest: /usr/local/bin/
     remote_src: yes
     mode: '0755'
@@ -71,6 +72,8 @@
     owner: root
     group: root
     mode: '0644'
+  when:
+    - tasks_rustfs_nodes is defined
 
 - name: Garantir que os diretórios base e de sistema existam com as permissões corretas
   ansible.builtin.file:
@@ -85,7 +88,7 @@
 
 - name: Criando os diretórios dos volumes RustFS
   ansible.builtin.file:
-    path: "{{ tasks_rustfs_base_dir }}/{{ item.folder }}"
+    path: "{{ [tasks_rustfs_base_dir,item.folder] | path_join }}"
     state: directory
     owner: "{{ tasks_rustfs_user_group }}"
     group: "{{ tasks_rustfs_user_group }}"
@@ -98,4 +101,21 @@
   ansible.builtin.template:
     src: rustfs/service.j2
     dest: /etc/systemd/system/rustfs.service
-  notify: Recarregar systemd
+  notify:
+    - Recarregar systemd
+
+- name: Adicionar mapeamento de nós no arquivo hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "^{{ item.ip }}\\s+{{ item.node }}"
+    line: "{{ item.ip }}\t{{ item.node }}"
+    state: present
+  loop: "{{ tasks_rustfs_nodes }}"
+  when:
+    - tasks_rustfs_nodes is defined
+
+- name: Garantir que o RustFS está rodando
+  ansible.builtin.systemd_service:
+    name: rustfs
+    state: started
+    enabled: true

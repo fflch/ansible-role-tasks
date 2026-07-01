@@ -142,6 +142,9 @@ tasks_rustfs_base_dir: /data
 tasks_rustfs_user_group: rustfs-user
 tasks_rustfs_access_key: "rustfsadmin"
 tasks_rustfs_secret_key: "rustfsadmin"
+tasks_rustfs_nodes:
+  - node: node1
+    ip: 192.168.8.100
 tasks_rustfs_managed_disks:
   - device: /dev/vdb
     folder: rustfs0

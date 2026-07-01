@@ -1,7 +1,17 @@
 RUSTFS_ACCESS_KEY={{ tasks_rustfs_access_key }}
 RUSTFS_SECRET_KEY={{ tasks_rustfs_secret_key }}
+{% set total_nodes = tasks_rustfs_nodes | length %}
+{% if total_nodes > 1 %}
+{% set endpoints = [] -%}
+{%- for item in tasks_rustfs_nodes -%}
+    {%- for disk in tasks_rustfs_managed_disks -%}
+        {%- set _ = endpoints.append('http://' ~ item.node ~ ':9000' ~ tasks_rustfs_base_dir ~ '/' ~ disk.folder) -%}
+    {%- endfor -%}
+{%- endfor -%}
+RUSTFS_VOLUMES="{{ endpoints | join(' ') }}"
+{% else %}
 RUSTFS_VOLUMES="{% for disk in tasks_rustfs_managed_disks %}{{ tasks_rustfs_base_dir }}/{{ disk.folder }}{% if not loop.last %} {% endif %}{% endfor %}"
-RUSTFS_ADDRESS=":9000"
+{% endif %}RUSTFS_ADDRESS=":9000"
 RUSTFS_CONSOLE_ENABLE=true
 RUST_LOG=error
 RUSTFS_OBS_LOG_DIRECTORY="/var/logs/rustfs/"
