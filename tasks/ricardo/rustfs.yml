@@ -59,8 +59,7 @@
 
 - name: Instalação do RustFS a partir do ZIP remoto
   ansible.builtin.unarchive:
-    # src: https://dl.rustfs.com/artifacts/rustfs/release/rustfs-linux-x86_64-musl-latest.zip
-    src: https://github.com/rustfs/rustfs/releases/download/1.0.0-beta.8/rustfs-linux-x86_64-gnu-latest.zip
+    src: https://dl.rustfs.com/artifacts/rustfs/release/rustfs-linux-x86_64-musl-latest.zip
     dest: /usr/local/bin/
     remote_src: yes
     mode: '0755'
