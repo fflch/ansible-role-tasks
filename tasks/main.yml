@@ -39,6 +39,9 @@
 - import_tasks: ricardo/rustfs.yml
   when: tasks_rustfs
 
+- import_tasks: ricardo/garage.yml
+  when: tasks_garage
+
 ### Augusto
 - import_tasks: augusto/nginxrevproxy.yml
   when: tasks_nginxrevproxy

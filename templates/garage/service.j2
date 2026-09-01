@@ -1,0 +1,24 @@
+[Unit]
+Description=Garage Data Store
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Environment='GARAGE_CONFIG_FILE=/etc/garage.toml' 'RUST_LOG={{ tasks_garage_log_level }}' 'RUST_BACKTRACE=1'
+ExecStart={{ tasks_garage_binary }} server
+User={{ tasks_garage_user_group }}
+Group={{ tasks_garage_user_group }}
+PrivateTmp=yes
+RemoveIPC=yes
+ProtectSystem=strict
+{% set endpoints = [] -%}
+{%- for disk in tasks_garage_managed_disks -%}
+    {%- set _ = endpoints.append(tasks_garage_basedata_dir ~ '/' ~ disk.folder) -%}
+{%- endfor -%}
+ReadWritePaths={{ endpoints | join(' ') }} {{ tasks_garage_metadata_dir }}
+ProtectHome=true
+NoNewPrivileges=true
+LimitNOFILE=42000
+
+[Install]
+WantedBy=multi-user.target

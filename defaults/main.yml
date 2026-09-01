@@ -14,6 +14,7 @@ tasks_drupal: false
 tasks_databases: false
 tasks_ocsinventoryserver: false
 tasks_rustfs: false
+tasks_garage: false
 
 # php
 tasks_php_version: '8.2'
@@ -151,3 +152,24 @@ tasks_rustfs_managed_disks:
 
   - device: /dev/vdc
     folder: rustfs1
+
+tasks_garage_version: "latest"
+tasks_garage_binary: /usr/local/bin/garage
+tasks_garage_log_level: "netapp=info,garage=info"
+tasks_garage_metadata_dir: /var/lib/garage/meta
+tasks_garage_basedata_dir: /data
+tasks_garage_db_engine: lmdb
+tasks_garage_user_group: garage-user
+tasks_garage_replication_factor: 1  # ideal é 3 na produção
+tasks_garage_rpc_secret: SenhaRPCSecret
+tasks_garage_admin_token: SenhaAdminSecret
+tasks_garage_metrics_token: SenhaMetricsSecret
+tasks_garage_s3_region: garage
+tasks_garage_s3_root_domain: s3.garage.localhost
+tasks_garage_web_access_enabled: true
+tasks_garage_web_root_domain: web.garage.localhost
+tasks_garage_ipv4_address: "127.0.0.1"
+tasks_garage_managed_disks:
+  - device: /dev/vdb
+    folder: garage0
+    capacity: 1G

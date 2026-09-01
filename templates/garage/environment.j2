@@ -1,0 +1,32 @@
+metadata_dir = "{{ tasks_garage_metadata_dir }}"
+
+data_dir = [
+{%- for disk in tasks_garage_managed_disks %}
+  { path = "{{ tasks_garage_basedata_dir}}/{{ disk.folder }}", capacity = "{{ disk.capacity }}" },
+{%- endfor %}
+]
+
+db_engine = "{{ tasks_garage_db_engine }}"
+
+replication_factor = {{ tasks_garage_replication_factor }}
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "{{ tasks_garage_ipv4_address }}:3901"
+rpc_secret = "{{ tasks_garage_rpc_secret }}"
+
+[s3_api]
+s3_region = "{{ tasks_garage_s3_region }}"
+api_bind_addr = "[::]:3900"
+root_domain = ".{{ tasks_garage_s3_root_domain }}"
+
+{% if tasks_garage_web_access_enabled %}
+[s3_web]
+bind_addr = "[::]:3902"
+root_domain = ".{{ tasks_garage_web_root_domain }}"
+index = "index.html"
+{% endif %}
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "{{ tasks_garage_admin_token }}"
+metrics_token = "{{ tasks_garage_metrics_token }}"

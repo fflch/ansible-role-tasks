@@ -1,0 +1,112 @@
+- name: Instalação pacotes
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop:
+    - parted
+    - xfsprogs
+
+- name: Formata o disco
+  community.general.filesystem:
+    fstype: "{{ item.filesystem_type | default('xfs') }}"
+    dev: "{{ item.device }}"
+    opts: "-i size=512 -n ftype=1 -L {{ item.folder | upper }}"
+  loop:
+    "{{ tasks_garage_managed_disks }}"
+  when:
+    - tasks_garage_managed_disks is defined
+
+- name: Monta o sistema de arquivos de forma permanente
+  no_log: true
+  ansible.posix.mount:
+    path: "{{ [tasks_garage_basedata_dir,item.folder] | path_join }}"
+    src: "LABEL={{ item.folder | upper }}"
+    fstype: "{{ item.filesystem_type | default('xfs') }}"
+    opts: "{{ item.mount_opts | default('defaults,noatime,nodiratime') }}"
+    state: mounted
+  loop:
+    "{{ tasks_garage_managed_disks }}"
+  when:
+    - tasks_garage_managed_disks is defined
+
+- name: Criar o grupo de sistema 'garage'
+  ansible.builtin.group:
+    name: "{{ tasks_garage_user_group }}"
+    state: present
+    system: true
+
+- name: Criar o usuário de sistema 'garage-user'
+  ansible.builtin.user:
+    name: "{{ tasks_garage_user_group }}"
+    group: "{{ tasks_garage_user_group }}"
+    state: present
+    system: true
+    create_home: false
+
+- name: Aplicar chown garage:garage nos diretórios encontrados
+  ansible.builtin.file:
+    path: "{{ [tasks_garage_basedata_dir,item.folder] | path_join }}"
+    owner: "{{ tasks_garage_user_group }}"
+    group: "{{ tasks_garage_user_group }}"
+    state: directory
+    recurse: yes
+  loop:
+    "{{ tasks_garage_managed_disks }}"
+  when:
+    - tasks_garage_managed_disks is defined
+
+- name: Download garage
+  ansible.builtin.get_url:
+    url: "https://garagehq.deuxfleurs.fr/_releases/{{ tasks_garage_version }}/x86_64-unknown-linux-musl/garage"
+    dest: "{{ tasks_garage_binary }}"
+    mode: '0755'
+    owner: root
+    group: root
+  notify: Restart garage
+
+- name: Criando o diretório do metadados
+  ansible.builtin.file:
+    path: "{{ tasks_garage_metadata_dir }}"
+    state: directory
+    owner: "{{ tasks_garage_user_group }}"
+    group: "{{ tasks_garage_user_group }}"
+    mode: '0750'
+  when:
+    - tasks_garage_metadata_dir is defined
+
+- name: Criando os diretórios dos volumes
+  ansible.builtin.file:
+    path: "{{ [tasks_garage_basedata_dir,item.folder] | path_join }}"
+    state: directory
+    owner: "{{ tasks_garage_user_group }}"
+    group: "{{ tasks_garage_user_group }}"
+    mode: '0750'
+  loop: "{{ tasks_garage_managed_disks }}"
+  when:
+    - tasks_garage_managed_disks is defined
+
+- name: Template garage config file
+  ansible.builtin.template:
+    src: garage/environment.j2
+    dest: "/etc/garage.toml"
+    mode: '0600'
+    owner: "{{ tasks_garage_user_group }}"
+    group: "{{ tasks_garage_user_group }}"
+
+- name: Criando o arquivo de serviço
+  ansible.builtin.template:
+    src: garage/service.j2
+    dest: /etc/systemd/system/garage.service
+    mode: '0644'
+    owner: root
+    group: root
+  notify:
+    - Recarregar systemd
+
+- name: Garantir que o garage está rodando
+  ansible.builtin.systemd_service:
+    name: garage
+    state: started
+    enabled: true
+    daemon_reload: true
