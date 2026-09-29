@@ -165,9 +165,9 @@ tasks_garage_rpc_secret: SenhaRPCSecret
 tasks_garage_admin_token: SenhaAdminSecret
 tasks_garage_metrics_token: SenhaMetricsSecret
 tasks_garage_s3_region: garage
-tasks_garage_s3_root_domain: s3.garage.localhost
+tasks_garage_s3_root_domain: s3.garage
 tasks_garage_web_access_enabled: true
-tasks_garage_web_root_domain: web.garage.localhost
+tasks_garage_web_root_domain: web.garage
 tasks_garage_ipv4_address: "127.0.0.1"
 tasks_garage_managed_disks:
   - device: /dev/vdb
