@@ -43,8 +43,6 @@
   when: tasks_garage
 
 ### Augusto
-- import_tasks: augusto/nginxrevproxy.yml
-  when: tasks_nginxrevproxy
 
 - import_tasks: augusto/databases.yml
   when: tasks_databases
