@@ -9,7 +9,6 @@
   file:
     path: /var/syslog/hosts
     state: directory
-    recurse: yes
 
 # Rodando na mão:
 # logrotate --force /etc/logrotate.conf
