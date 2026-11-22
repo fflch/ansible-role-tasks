@@ -12,7 +12,6 @@
     php_version: "{{php_default_version_debian}}"
     php_packages_extra:
       - memcached
-      - msmtp
       - php{{ php_default_version_debian }}-mbstring
       - php{{ php_default_version_debian }}-curl
       - php{{ php_default_version_debian }}-ldap
@@ -32,7 +31,6 @@
     php_memory_limit: "1024M"
     php_max_execution_time: "300"
     php_max_input_time: "240"
-    php_sendmail_path: "/usr/bin/msmtp -t"
     php_upload_max_filesize: "128M"
     php_max_file_uploads: "60"
     php_date_timezone: "America/Sao_Paulo"

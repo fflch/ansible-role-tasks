@@ -190,22 +190,6 @@
     group: root
     recurse: yes
 
-- name: Copia report.sh.j2
-  template:
-    src: "drupal/report.sh.j2"
-    dest: "/root/drupal/tools/report.sh"
-    owner: root
-    group: root
-    mode: 0700
-
-- name: roda script report no cron
-  cron:
-    name: "report_aegir_drupal"
-    minute: "0"
-    hour: "4"
-    job: "/root/drupal/tools/report.sh"
-    user: root
-
 - name: cria o diretório tools para colocarmos scripts diversos
   file:
     dest: "/.tokens/"

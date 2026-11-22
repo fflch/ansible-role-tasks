@@ -1,5 +1,4 @@
 ---
-tasks_msmtp: false
 tasks_php: false
 tasks_cups: false
 tasks_bind: false
@@ -18,13 +17,6 @@ tasks_garage: false
 
 # php
 tasks_php_version: '8.2'
-
-# msmtp
-tasks_msmtp_email: 'testes.sti.fflch@usp.br'
-tasks_msmtp_password: '123'
-tasks_msmtp_emails:
-  - 'email1@usp.br'
-  - 'email2@usp.br'
 
 # variáveis cups
 tasks_cups_quotas_username: 'user'

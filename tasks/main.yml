@@ -4,9 +4,6 @@
 - import_tasks: thiago/ssh.yml
 - import_tasks: thiago/vars.yml
 
-- import_tasks: thiago/msmtp.yml
-  when: tasks_msmtp
-
 - import_tasks: thiago/cups.yml
   when: tasks_cups
 
