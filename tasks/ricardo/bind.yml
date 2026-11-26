@@ -86,51 +86,47 @@
   notify:
     - restart bind9
 
-- name: cria diretório /root
+- name: cria diretórios do build-zone-records
   file:
-    dest: "{{item}}"
-    recurse: yes
+    dest: "{{ item }}"
     state: directory
     owner: root
     group: root
+    mode: 0700
   loop:
-    - "/root/build_zone_records"
-    - "/root/build_zone_records/files"
-    - "/root/build_zone_records/clients"
-    - "/root/build_zone_records/.cache"
+    - /etc/build-zone-records
+    - /var/lib/build-zone-records
 
-- name: copia o main para build_zone_records
+- name: instala o comando build-zone-records
   template:
-    src: "bind/main.j2"
-    dest: "/root/build_zone_records/main.sh"
+    src: "bind/build-zone-records.j2"
+    dest: "/usr/local/bin/build-zone-records"
     owner: root
-    group: bind
+    group: root
     mode: 0700
 
-- name: copia o head para build_zone_records
+- name: copia o cabeçalho da zona
   template:
     src: "bind/head.j2"
-    dest: "/root/build_zone_records/files/head.txt"
+    dest: "/etc/build-zone-records/head.txt"
     owner: root
-    group: bind
+    group: root
     mode: 0600
 
-- name: copia os arquivos do build_zone_records
+- name: copia domínios fixos e URLs dos domínios dinâmicos
   copy:
-    src: "../../../files/bind/"
-    dest: "/root/build_zone_records/files/"
+    src: "../../../files/bind/{{ item }}"
+    dest: "/etc/build-zone-records/{{ item }}"
     owner: root
-    group: bind
+    group: root
     mode: 0600
+  loop:
+    - domains.txt
+    - url_clients.txt
 
-- name: força rodar o main.sh quando rodarmos o playbook
-  shell: 'echo "ok" > /root/build_zone_records/.cache/clients_old.txt'
-  tags:
-    - teste
-
-- name: roda script dns no cron
+- name: roda build-zone-records a cada 5 minutos
   cron:
     name: "build_zone_records"
-    minute: "*/10"
-    job: "cd /root/build_zone_records && ./main.sh {{ tasks_bind_job_server | default('prod', true) }}"
+    minute: "*/5"
+    job: "/usr/local/bin/build-zone-records"
     user: root

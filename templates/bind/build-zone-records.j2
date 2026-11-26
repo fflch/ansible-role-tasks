@@ -1,0 +1,109 @@
+#!/bin/bash
+# {{ ansible_managed }}
+#
+# Atualiza /var/cache/bind/master/{{ tasks_bind_subdomain }}.db (= /etc/bind/master/{{ tasks_bind_subdomain }}.db)
+#
+#   cabeçalho (/etc/build-zone-records/head.txt, com __serial__)
+#   + domínios fixos (/etc/build-zone-records/domains.txt)
+#   + domínios de cada URL em /etc/build-zone-records/url_clients.txt
+#
+# Uso: build-zone-records   (roda pelo cron a cada 5 minutos)
+# Log: /var/log/build-zone-records.log
+#
+# - cada URL é independente: se uma estiver fora do ar (ou vazia), usa a última
+#   versão obtida dela e segue com as demais
+# - se nada mudou desde a última atualização: não faz nada
+# - se mudou: incrementa o serial, valida com named-checkzone, grava e reinicia o bind
+
+set -u
+
+zone='{{ tasks_bind_subdomain }}.{{ tasks_bind_domain }}'
+db='/var/cache/bind/master/{{ tasks_bind_subdomain }}.db'
+conf='/etc/build-zone-records'
+head="$conf/head.txt"
+fixed="$conf/domains.txt"
+clients="$conf/url_clients.txt"
+cache='/var/lib/build-zone-records'
+log='/var/log/build-zone-records.log'
+last="$cache/last_body.txt"
+
+mkdir -p "$cache"
+
+log() { echo "$(date '+%Y-%m-%d %H:%M:%S') - $*" >> "$log"; }
+
+# evita duas execuções simultâneas 
+exec 9> "$cache/lock"
+flock -n 9 || exit 0
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# 1) baixa os domínios de cada URL, de forma independente.
+#    - URL ok: usa o conteúdo novo e guarda como "última versão boa" dessa URL
+#    - URL fora do ar/vazia: mantém a última versão boa dessa URL (se houver)
+#    Assim, se um site cair, os domínios do outro continuam sendo publicados,
+#    e os do site que caiu voltam a ser atualizados quando ele voltar.
+mkdir -p "$cache/sources"
+: > "$tmp/remote.txt"
+while read -r url; do
+    url=${url%%#*}; url=$(echo "$url" | xargs)
+    [ -z "$url" ] && continue
+    src="$cache/sources/$(echo "$url" | sed 's#^[a-z]*://##; s#[^A-Za-z0-9._-]#_#g').txt"
+
+    if curl -fsL --max-time 30 "$url" -o "$tmp/out.txt" \
+       && tr -d '\r' < "$tmp/out.txt" | grep -v '^[[:space:]]*$' > "$tmp/clean.txt" \
+       && [ -s "$tmp/clean.txt" ]; then
+        sort -u "$tmp/clean.txt" > "$src"
+    elif [ -s "$src" ]; then
+        log "Fora do ar: $url (mantendo a última versão obtida)"
+    else
+        log "Fora do ar: $url (sem versão anterior, ignorando)"
+        continue
+    fi
+
+    {
+        echo
+        echo "; ---- $url ----"
+        cat "$src"
+    } >> "$tmp/remote.txt"
+done < "$clients"
+
+# 2) monta o corpo da zona (com __serial__ ainda não substituído)
+{
+    cat "$head"
+    echo
+    echo "; ---- domínios fixos ($fixed) ----"
+    cat "$fixed"
+    cat "$tmp/remote.txt"
+} > "$tmp/body.txt"
+
+# 3) nada mudou? não faz nada
+if [ -f "$last" ] && [ -f "$db" ] && cmp -s "$tmp/body.txt" "$last"; then
+    exit 0
+fi
+
+# 4) novo serial: max(serial atual + 1, AAAAMMDD00)
+current=$(grep -m1 -i 'serial' "$db" 2>/dev/null | grep -oE '[0-9]{10}' | head -1)
+current=${current:-0}
+today=$(date +%Y%m%d)00
+serial=$((current + 1))
+[ "$serial" -lt "$today" ] && serial=$today
+
+sed "s/__serial__/$serial/" "$tmp/body.txt" > "$tmp/zone.db"
+
+# 5) valida e publica
+if ! check=$(named-checkzone "$zone" "$tmp/zone.db" 2>&1); then
+    log "$zone não passou no named-checkzone: $(echo "$check" | tr '\n' ' ')"
+    exit 1
+fi
+
+[ -f "$db" ] && cp -p "$db" "$cache/{{ tasks_bind_subdomain }}.db.bak"
+install -o root -g bind -m 0644 "$tmp/zone.db" "$db"
+cp "$tmp/body.txt" "$last"
+
+if systemctl restart bind9; then
+    log "Zona atualizada, serial $serial"
+else
+    log "Zona atualizada (serial $serial), mas falhou ao reiniciar o bind9"
+    exit 1
+fi
