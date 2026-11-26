@@ -50,7 +50,7 @@ while read -r url; do
     [ -z "$url" ] && continue
     src="$cache/sources/$(echo "$url" | sed 's#^[a-z]*://##; s#[^A-Za-z0-9._-]#_#g').txt"
 
-    if curl -fsL --max-time 30 "$url" -o "$tmp/out.txt" \
+    if curl -fsL{{ '' if tasks_bind_url_validate_certs | bool else 'k' }} --max-time 30 "$url" -o "$tmp/out.txt" \
        && tr -d '\r' < "$tmp/out.txt" | grep -v '^[[:space:]]*$' > "$tmp/clean.txt" \
        && [ -s "$tmp/clean.txt" ]; then
         sort -u "$tmp/clean.txt" > "$src"
