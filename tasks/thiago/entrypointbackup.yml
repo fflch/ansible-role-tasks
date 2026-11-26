@@ -14,4 +14,4 @@
     path: "/backupsfflch/{{ item }}"
     state: directory
     recurse: yes
-  loop: "{{ groups['vagrant'] }}"
+  loop: "{{ groups['vagrant'] | default([]) }}"
