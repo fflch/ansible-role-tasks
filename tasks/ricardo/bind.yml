@@ -46,7 +46,7 @@
 
 - name: Copy /var/cache/bind/keys
   copy:
-    src: ../../../files/bind/keys/
+    src: "{{ tasks_bind_files_dir }}/keys/"
     dest: /var/cache/bind/keys
     mode: '0644'
 
@@ -115,7 +115,7 @@
 
 - name: copia domínios fixos e URLs dos domínios dinâmicos
   copy:
-    src: "../../../files/bind/{{ item }}"
+    src: "{{ tasks_bind_files_dir }}/{{ item }}"
     dest: "/etc/build-zone-records/{{ item }}"
     owner: root
     group: root

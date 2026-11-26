@@ -48,6 +48,8 @@ tasks_bind_ns_ip_reverse: 8.168.192
 task_bind_rev_ip6: '0.7.0.8.0.d.2.1.1.0.0.2'
 # false: o build-zone-records não verifica o certificado HTTPS das URLs (curl -k)
 tasks_bind_url_validate_certs: true
+# diretório no controller com keys/, domains.txt e url_clients.txt
+tasks_bind_files_dir: "{{ playbook_dir }}/../../files/bind"
 tasks_bind_address_dns_slave:
   - {address: '192.168.
 tasks_databases0.1'}
